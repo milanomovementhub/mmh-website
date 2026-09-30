@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#0A0A0A; }
+  * { box-sizing:border-box; }
+  a { color:inherit; text-decoration:none; }
+  a:hover { opacity:.8; }
+  ::selection { background:#2F6BFF; color:#fff; }
+  @keyframes mmh-mq-l { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+  @keyframes mmh-mq-r { from { transform:translateX(-50%); } to { transform:translateX(0); } }
+  @keyframes mmh-rise { from { opacity:0; transform:translateY(34px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes mmh-wipe { from { clip-path:inset(0 100% 0 0); } to { clip-path:inset(0 0 0 0); } }
+  @keyframes mmh-prog { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+  @keyframes mmh-blink { 0%,60% { opacity:1; } 61%,100% { opacity:.15; } }
+  @keyframes mmh-hero { from { opacity:0; transform:translateY(90%); } to { opacity:1; transform:translateY(0); } }
+</style>
+</helmet>
+
+<div style="background:#0A0A0A; color:#F5F5F0; font-family:Archivo, Helvetica, Arial, sans-serif; overflow-x:hidden;">
+
+  <div style="position:fixed; top:0; left:0; right:0; height:2px; background:#FFCE3B; transform-origin:0 50%; z-index:40; animation:mmh-prog linear; animation-timeline:scroll(root);"></div>
+
+  <header style="position:sticky; top:0; z-index:30; background:rgba(10,10,10,0.9); backdrop-filter:blur(12px); border-bottom:1px solid #1A1A1A;">
+    <div style="max-width:1280px; margin:0 auto; padding:13px 24px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
+      <div style="display:flex; align-items:center; gap:30px;">
+        <span style="font-size:20px; font-weight:800; letter-spacing:-0.045em;">MMH</span>
+        <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.12em; color:#6E6E69; display:flex; gap:9px; align-items:center;"><span style="width:6px; height:6px; background:#2F6BFF; display:block; animation:mmh-blink 1.6s steps(1) infinite;"></span>Milano · {{ clock }}</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.09em; text-transform:uppercase;">
+        <a href="#calendario" style="padding:9px 15px; border:1px solid #2B2B2B; color:#C9C9C4; transition:.25s;" style-hover="border-color:#F5F5F0; color:#F5F5F0;">Calendario</a>
+        <a href="#segnala" style="padding:9px 15px; background:#F5F5F0; color:#0A0A0A; font-weight:600;">Segnala</a>
+      </div>
+    </div>
+  </header>
+
+  <section style="padding:88px 24px 0; max-width:1280px; margin:0 auto;">
+    <div style="overflow:hidden;"><h1 style="margin:0; font-size:clamp(40px, 8.4vw, 116px); line-height:0.92; letter-spacing:-0.055em; font-weight:700; animation:mmh-hero .95s cubic-bezier(.16,1,.3,1) .9s both;">La danza a Milano,</h1></div>
+    <div style="overflow:hidden;"><h1 style="margin:0; font-size:clamp(40px, 8.4vw, 116px); line-height:0.92; letter-spacing:-0.055em; font-weight:700; color:#6E6E69; animation:mmh-hero .95s cubic-bezier(.16,1,.3,1) 1.05s both;">in un calendario solo.</h1></div>
+    <div style="display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap; margin-top:44px; animation:mmh-hero .9s cubic-bezier(.16,1,.3,1) 1.25s both;">
+      <p style="margin:0; font-family:'IBM Plex Mono', monospace; font-size:13.5px; line-height:1.75; color:#8A8A85; max-width:46ch;">Open class, casting ed eventi verificati alla fonte. Aggiornato ogni giorno. Nessun account, nessuna iscrizione.</p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; align-items:start;">
+        <a href="#calendario" style="padding:14px 24px; background:#F5F5F0; color:#0A0A0A; font-weight:600;">Apri il calendario</a>
+        <a href="#segnala" style="padding:14px 24px; border:1px solid #2B2B2B;" style-hover="border-color:#F5F5F0;">Segnala</a>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:72px 0 0; overflow:hidden;">
+    <div style="display:flex; width:max-content; animation:mmh-mq-l 26s linear infinite;">
+      <sc-for list="{{ bigRowA }}" as="w" hint-placeholder-count="8">
+        <span style="font-size:clamp(56px, 11vw, 150px); font-weight:800; letter-spacing:-0.055em; line-height:1; padding-right:44px; white-space:nowrap; color:{{ w.color }}; -webkit-text-stroke:{{ w.stroke }};">{{ w.label }}</span>
+      </sc-for>
+    </div>
+    <div style="display:flex; width:max-content; animation:mmh-mq-r 32s linear infinite; margin-top:6px;">
+      <sc-for list="{{ bigRowB }}" as="w" hint-placeholder-count="8">
+        <span style="font-size:clamp(56px, 11vw, 150px); font-weight:800; letter-spacing:-0.055em; line-height:1; padding-right:44px; white-space:nowrap; color:{{ w.color }}; -webkit-text-stroke:{{ w.stroke }};">{{ w.label }}</span>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1280px; margin:0 auto; padding:72px 24px 0;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); border-top:1px solid #1A1A1A;">
+      <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+        <div style="padding:26px 22px 26px 0; animation:mmh-rise .7s cubic-bezier(.16,1,.3,1) both; animation-timeline:view(); animation-range:entry 5% cover 25%;">
+          <div style="font-size:clamp(34px, 5vw, 58px); font-weight:700; letter-spacing:-0.05em; line-height:1; color:{{ s.color }}; font-variant-numeric:tabular-nums;">{{ s.n }}</div>
+          <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#8A8A85; margin-top:12px;">{{ s.k }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1280px; margin:0 auto; padding:80px 24px 0;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
+      <sc-for list="{{ catCards }}" as="c" hint-placeholder-count="3">
+        <a href="#calendario" onClick="{{ c.onClick }}" style="position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; gap:60px; min-height:270px; padding:24px; border:1px solid #1E1E1E; transition:border-color .3s;" style-hover="border-color:{{ c.color }};" style-before="content:''; position:absolute; inset:0; background:{{ c.color }}; transform:translateY(101%); transition:transform .45s cubic-bezier(.76,0,.24,1);">
+          <div style="position:relative; display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#8A8A85;">
+            <span>{{ c.idx }}</span><span>{{ c.count }} in {{ monthShort }}</span>
+          </div>
+          <div style="position:relative;">
+            <div style="width:26px; height:4px; background:{{ c.color }}; margin-bottom:18px;"></div>
+            <div style="font-size:30px; font-weight:700; letter-spacing:-0.035em; line-height:1;">{{ c.label }}</div>
+            <div style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#8A8A85; margin-top:12px; line-height:1.65;">{{ c.desc }}</div>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="calendario" style="max-width:1280px; margin:0 auto; padding:88px 24px 0;">
+    <div style="display:flex; align-items:end; justify-content:space-between; gap:24px; flex-wrap:wrap;">
+      <h2 style="margin:0; font-size:clamp(26px, 4vw, 44px); line-height:1; letter-spacing:-0.045em; font-weight:700; animation:mmh-wipe .9s cubic-bezier(.76,0,.24,1) both; animation-timeline:view(); animation-range:entry 5% cover 25%;">{{ monthLabel }}</h2>
+      <div style="display:flex; gap:8px;">
+        <button onClick="{{ prevMonth }}" style="background:transparent; border:1px solid #2B2B2B; color:#F5F5F0; width:34px; height:34px; cursor:pointer; font-family:'IBM Plex Mono', monospace; transition:.25s;" style-hover="border-color:#F5F5F0;">‹</button>
+        <button onClick="{{ nextMonth }}" style="background:transparent; border:1px solid #2B2B2B; color:#F5F5F0; width:34px; height:34px; cursor:pointer; font-family:'IBM Plex Mono', monospace; transition:.25s;" style-hover="border-color:#F5F5F0;">›</button>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:26px;">
+      <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+        <button onClick="{{ f.onClick }}" style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:10px 16px; cursor:pointer; border:1px solid {{ f.border }}; background:{{ f.bg }}; color:{{ f.fg }}; transition:.25s;">{{ f.label }} <span style="opacity:.5;">{{ f.count }}</span></button>
+      </sc-for>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(310px, 1fr)); border:1px solid #1A1A1A; margin-top:22px; background:#0C0C0C;">
+      <div style="padding:24px; border-right:1px solid #1A1A1A;">
+        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:1px; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.12em; color:#5E5E5A; text-transform:uppercase; margin-bottom:8px;">
+          <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:1px; background:#191919; border:1px solid #191919;">
+          <sc-for list="{{ cells }}" as="cell" hint-placeholder-count="35">
+            <div onClick="{{ cell.onClick }}" style="background:{{ cell.bg }}; min-height:72px; padding:7px 8px; cursor:pointer; display:flex; flex-direction:column; gap:5px; transition:background .2s;" style-hover="background:#161616;">
+              <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:{{ cell.numColor }};">{{ cell.label }}</span>
+              <div style="display:flex; flex-direction:column; gap:3px;">
+                <sc-for list="{{ cell.marks }}" as="mark" hint-placeholder-count="0">
+                  <div style="height:4px; background:{{ mark.color }};"></div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:18px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:#8A8A85;">
+          <span style="display:flex; align-items:center; gap:7px;"><span style="width:10px; height:10px; background:#2F6BFF; display:block;"></span>Open Class</span>
+          <span style="display:flex; align-items:center; gap:7px;"><span style="width:10px; height:10px; background:#FFCE3B; display:block;"></span>Eventi</span>
+          <span style="display:flex; align-items:center; gap:7px;"><span style="width:10px; height:10px; background:#FF3B21; display:block;"></span>Casting</span>
+        </div>
+      </div>
+
+      <div style="padding:24px; display:flex; flex-direction:column;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#5E5E5A; padding-bottom:12px; border-bottom:1px solid #1A1A1A;">{{ listHeading }}</div>
+        <sc-for list="{{ visible }}" as="ev" hint-placeholder-count="6">
+          <a href="#evento" onClick="{{ ev.onClick }}" style="display:grid; grid-template-columns:56px minmax(0,1fr) auto; gap:14px; align-items:start; padding:{{ ev.pad }} 8px; margin:0 -8px; border-bottom:1px solid #161616; cursor:pointer; transition:background .2s;" style-hover="background:#141414;">
+            <div style="font-family:'IBM Plex Mono', monospace; border-left:3px solid {{ ev.color }}; padding-left:9px;">
+              <div style="font-size:18px; font-weight:500; line-height:1;">{{ ev.day }}</div>
+              <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#5E5E5A; margin-top:4px;">{{ ev.mon }}</div>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:15.5px; font-weight:600; letter-spacing:-0.012em;">{{ ev.nome }}</div>
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#8A8A85; margin-top:5px; line-height:1.55;">{{ ev.meta }}</div>
+            </div>
+            <div style="text-align:right; font-family:'IBM Plex Mono', monospace; font-size:11px; white-space:nowrap;">
+              <div style="color:{{ ev.color }}; letter-spacing:0.08em; text-transform:uppercase;">{{ ev.categoria }}</div>
+              <div style="color:#8A8A85; margin-top:5px;">{{ ev.prezzoLabel }}</div>
+            </div>
+          </a>
+        </sc-for>
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#5E5E5A; padding-top:16px;">{{ emptyNote }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1280px; margin:0 auto; padding:88px 24px 0;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:34px; align-items:start;">
+      <div>
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase; color:#8A8A85;">In evidenza</div>
+        <h2 style="margin:16px 0 0; font-size:clamp(26px, 4vw, 44px); line-height:1.02; letter-spacing:-0.045em; font-weight:700;">Il prossimo appuntamento</h2>
+        <div style="display:flex; gap:6px; margin-top:26px;">
+          <sc-for list="{{ ticks }}" as="t" hint-placeholder-count="3">
+            <div onClick="{{ t.onClick }}" style="height:3px; width:40px; background:{{ t.bg }}; cursor:pointer;"></div>
+          </sc-for>
+        </div>
+      </div>
+      <a href="#evento" onClick="{{ feature.onClick }}" style="display:block; padding:30px; background:{{ feature.bg }}; color:{{ feature.fg }}; min-height:280px; cursor:pointer; transition:background .4s;">
+        <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase;">
+          <span>{{ feature.categoria }}</span><span>{{ feature.dateShort }}</span>
+        </div>
+        <div style="font-size:clamp(24px, 3.4vw, 40px); font-weight:700; letter-spacing:-0.04em; line-height:1.05; margin-top:56px;">{{ feature.nome }}</div>
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:12.5px; margin-top:18px; line-height:1.7; opacity:.72;">{{ feature.meta }}</div>
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase; margin-top:26px;">Dettagli →</div>
+      </a>
+    </div>
+  </section>
+
+  <section style="padding:88px 0 0; overflow:hidden;">
+    <div style="display:flex; width:max-content; animation:mmh-mq-l 34s linear infinite; border-top:1px solid #1A1A1A; border-bottom:1px solid #1A1A1A; padding:18px 0;">
+      <sc-for list="{{ marquee }}" as="m" hint-placeholder-count="20">
+        <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:#5E5E5A; padding:0 24px; white-space:nowrap;">{{ m.label }}</span>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="come" style="max-width:1280px; margin:0 auto; padding:80px 24px 0;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase; color:#8A8A85;">Come funziona</div>
+    <div style="border-top:1px solid #1A1A1A; margin-top:22px;">
+      <sc-for list="{{ how }}" as="h" hint-placeholder-count="4">
+        <div onClick="{{ h.onClick }}" style="border-bottom:1px solid #1A1A1A; padding:24px 0; cursor:pointer; display:grid; grid-template-columns:54px minmax(0,1fr) 30px; gap:18px; align-items:start; transition:opacity .25s;" style-hover="opacity:.75;">
+          <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:{{ h.color }};">{{ h.n }}</div>
+          <div>
+            <div style="font-size:clamp(19px, 2.6vw, 28px); font-weight:600; letter-spacing:-0.03em;">{{ h.t }}</div>
+            <sc-if value="{{ h.open }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:12.5px; line-height:1.8; color:#8A8A85; margin-top:14px; max-width:62ch; animation:mmh-rise .45s cubic-bezier(.16,1,.3,1) both;">{{ h.d }}</div>
+            </sc-if>
+          </div>
+          <div style="font-family:'IBM Plex Mono', monospace; font-size:18px; text-align:right; color:#8A8A85;">{{ h.sign }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="segnala" style="max-width:1280px; margin:80px auto 0; padding:0 24px;">
+    <div style="border:1px solid #1A1A1A; padding:clamp(30px, 6vw, 68px); display:flex; gap:30px; align-items:end; justify-content:space-between; flex-wrap:wrap; animation:mmh-rise .8s cubic-bezier(.16,1,.3,1) both; animation-timeline:view(); animation-range:entry 5% cover 30%;">
+      <div>
+        <h2 style="margin:0; font-size:clamp(26px, 4.4vw, 48px); line-height:1.02; letter-spacing:-0.045em; font-weight:700; max-width:19ch;">Organizzi una classe, un casting o un evento?</h2>
+        <p style="margin:16px 0 0; font-family:'IBM Plex Mono', monospace; font-size:13px; color:#8A8A85; line-height:1.7; max-width:52ch;">Mandaci data, ora, luogo e link. Verifichiamo alla fonte e lo pubblichiamo in calendario.</p>
+      </div>
+      <div style="display:flex; gap:12px; flex-wrap:wrap; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.08em; text-transform:uppercase;">
+        <a href="#" style="padding:15px 26px; background:#F5F5F0; color:#0A0A0A; font-weight:600;">Invia segnalazione</a>
+        <a href="#" style="padding:15px 26px; border:1px solid #2B2B2B;" style-hover="border-color:#F5F5F0;">Scrivici in DM</a>
+      </div>
+    </div>
+  </section>
+
+  <footer style="margin-top:80px; border-top:1px solid #1A1A1A;">
+    <div style="max-width:1280px; margin:0 auto; padding:40px 24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:26px; font-family:'IBM Plex Mono', monospace; font-size:12px; line-height:2; color:#8A8A85;">
+      <div><div style="color:#F5F5F0; letter-spacing:0.14em; text-transform:uppercase; font-size:10.5px;">Categorie</div><a href="#calendario">Open Class</a><br><a href="#calendario">Casting</a><br><a href="#calendario">Eventi</a></div>
+      <div><div style="color:#F5F5F0; letter-spacing:0.14em; text-transform:uppercase; font-size:10.5px;">Progetto</div><a href="#come">Come funziona</a><br><a href="#segnala">Segnala</a></div>
+      <div><div style="color:#F5F5F0; letter-spacing:0.14em; text-transform:uppercase; font-size:10.5px;">Contatti</div><a href="#">Instagram</a><br><a href="#">Email</a></div>
+      <div><div style="color:#F5F5F0; letter-spacing:0.14em; text-transform:uppercase; font-size:10.5px;">Stato</div>Fase 1<br>{{ clock }} · Milano</div>
+    </div>
+    <div style="overflow:hidden; height:190px; position:relative; border-top:1px solid #1A1A1A;">
+      <div style="position:absolute; left:-0.04em; bottom:-0.3em; font-size:clamp(150px, 27vw, 350px); font-weight:800; letter-spacing:-0.06em; line-height:0.8; color:#161616; user-select:none; white-space:nowrap;">MMH</div>
+      <div style="position:absolute; right:24px; bottom:20px; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#5E5E5A; text-align:right;">Milano Movement Hub<br>2026</div>
+    </div>
+  </footer>
+</div>
+
+<sc-if value="{{ detail }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed; inset:0; background:{{ detail.bg }}; color:{{ detail.fg }}; z-index:70; overflow:auto; font-family:Archivo, Helvetica, Arial, sans-serif; display:flex; flex-direction:column; animation:mmh-rise .45s cubic-bezier(.16,1,.3,1) both;">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:18px 24px; border-bottom:1px solid {{ detail.rule }};">
+      <span style="font-size:20px; font-weight:800; letter-spacing:-0.045em;">MMH</span>
+      <button onClick="{{ closeDetail }}" style="background:transparent; border:1px solid {{ detail.rule }}; color:inherit; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; padding:9px 14px; cursor:pointer;">Chiudi ✕</button>
+    </div>
+    <div style="padding:56px 24px 40px; border-bottom:1px solid {{ detail.rule }}; width:100%; max-width:1280px; margin:0 auto;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:{{ detail.color }};">{{ detail.categoria }}</div>
+      <h2 style="margin:16px 0 0; font-size:clamp(30px, 5.5vw, 62px); line-height:1; letter-spacing:-0.045em; font-weight:700; max-width:20ch;">{{ detail.nome }}</h2>
+    </div>
+    <div style="width:100%; max-width:1280px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); border-bottom:1px solid {{ detail.rule }};">
+      <sc-for list="{{ detail.fields }}" as="field" hint-placeholder-count="6">
+        <div style="padding:22px 24px; border-right:1px solid {{ detail.rule }}; border-bottom:1px solid {{ detail.rule }};">
+          <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; opacity:.55;">{{ field.k }}</div>
+          <div style="font-size:17px; font-weight:500; margin-top:8px; letter-spacing:-0.01em;">{{ field.v }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="width:100%; max-width:1280px; margin:0 auto; padding:28px 24px; display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+      <a href="#" style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; padding:14px 22px; background:{{ detail.color }}; color:{{ detail.ctaFg }};">Vai alla fonte ↗</a>
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; opacity:.55;">{{ detail.source }}</span>
+    </div>
+    <div style="width:100%; max-width:70ch; margin:0 auto 0 0; padding:0 24px 40px; font-family:'IBM Plex Mono', monospace; font-size:12.5px; line-height:1.8; opacity:.75;">{{ detail.note }}</div>
+    <div style="margin-top:auto; overflow:hidden; height:170px; position:relative;">
+      <div style="position:absolute; left:-0.04em; bottom:-0.3em; font-size:clamp(140px, 25vw, 320px); font-weight:800; letter-spacing:-0.06em; line-height:0.8; color:{{ detail.watermark }}; user-select:none; white-space:nowrap;">MMH</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ loader }}" hint-placeholder-val="{{ true }}">
+  <div style="position:fixed; inset:0; z-index:90; background:#0A0A0A; color:#F5F5F0; display:flex; flex-direction:column; justify-content:space-between; padding:26px 24px; font-family:'IBM Plex Mono', monospace; transform:translateY({{ loader.y }}); transition:transform .85s cubic-bezier(.76,0,.24,1);">
+    <div style="display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6E6E69;">
+      <span>Milano Movement Hub</span><span>Fase 1</span>
+    </div>
+    <div style="font-family:Archivo, Helvetica, sans-serif; font-size:clamp(70px, 20vw, 240px); font-weight:800; letter-spacing:-0.06em; line-height:0.85; font-variant-numeric:tabular-nums;">{{ loader.pct }}</div>
+    <div>
+      <div style="height:2px; background:#1E1E1E; margin-bottom:16px;"><div style="height:2px; background:{{ loader.color }}; width:{{ loader.w }}; transition:width .1s linear;"></div></div>
+      <div style="display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6E6E69;">
+        <span style="color:{{ loader.color }};">{{ loader.label }}</span><span>Carico il calendario</span>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showPrices&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Lista&quot;},&quot;listDensity&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Comodo&quot;,&quot;Compatto&quot;],&quot;default&quot;:&quot;Comodo&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Lista&quot;}}">
+const CAT = { "Open Class":"#2F6BFF", "Eventi":"#FFCE3B", "Casting":"#FF3B21" };
+const MESI = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+const MES3 = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+
+const EVENTI = [
+  { nome:"Open Class Contemporaneo — intermedio", cat:"Open Class", d:[2026,9,1], ora:"19:00–20:30", luogo:"DanceHaus, Via Savona 17", chi:"Chiara Bersani", prezzo:"15 €", fonte:"@dancehausmilano", note:"Livello intermedio. Portare calzini o piedi nudi. Posti limitati, prenotazione via DM." },
+  { nome:"Casting — corpo di ballo produzione TV", cat:"Casting", d:[2026,9,3], ora:"10:00", luogo:"Teatro Nuovo, Piazza San Babila", chi:"Produzione Mediaset", prezzo:"Gratuito", fonte:"Bando ufficiale", note:"Età 18–30. Presentarsi con abbigliamento da sala, foto e CV stampati. Selezione su classe di jazz e tratto libero." },
+  { nome:"Heels Open Class", cat:"Open Class", d:[2026,9,5], ora:"20:00–21:30", luogo:"Spazio Tondelli, Via Padova 44", chi:"Marta Riva", prezzo:"18 €", fonte:"@spaziotondelli", note:"Tacchi consigliati ma non obbligatori. Ginocchiere utili." },
+  { nome:"Workshop Floorwork con Léa Tirabasso", cat:"Eventi", d:[2026,9,7], ora:"11:00–16:00", luogo:"Fabbrica del Vapore", chi:"Léa Tirabasso", prezzo:"75 €", fonte:"@fabbricadelvapore", note:"Workshop intensivo di una giornata, pausa pranzo inclusa. Iscrizione obbligatoria entro il 3 ottobre." },
+  { nome:"Open Class Urban / Hip Hop", cat:"Open Class", d:[2026,9,9], ora:"19:30–21:00", luogo:"Blue Studio, Via Tortona 31", chi:"Kevin Osei", prezzo:"15 €", fonte:"@bluestudiomi", note:"Open level. Si consiglia arrivo 15 minuti prima." },
+  { nome:"Casting — compagnia contemporanea, stagione 26/27", cat:"Casting", d:[2026,9,12], ora:"09:30", luogo:"Teatro Elfo Puccini", chi:"Compagnia Zerogrammi", prezzo:"Gratuito", fonte:"Bando ufficiale", note:"Due fasi: classe al mattino, materiale di repertorio nel pomeriggio. Inviare CV e showreel prima dell'audizione." },
+  { nome:"Milano Dance Night — serata aperta", cat:"Eventi", d:[2026,9,15], ora:"21:00", luogo:"Base Milano, Via Bergognone 34", chi:"Base Milano", prezzo:"10 €", fonte:"@basemilano", note:"Serata aperta con performance brevi e jam finale. Ingresso libero fino a esaurimento posti." },
+  { nome:"Open Class Classico", cat:"Open Class", d:[2026,9,16], ora:"10:00–11:30", luogo:"Scuola Paolo Grassi, Via Salasco 4", chi:"Anna Cerruti", prezzo:"14 €", fonte:"@scuolapaolograssi", note:"Sbarra e centro. Livello avanzato." },
+  { nome:"Workshop Improvvisazione e composizione", cat:"Eventi", d:[2026,9,20], ora:"14:00–18:00", luogo:"Teatro Out Off", chi:"Silvia Gribaudi", prezzo:"60 €", fonte:"@teatrooutoff", note:"Focus su improvvisazione strutturata e composizione istantanea. Aperto anche a non professionisti." },
+  { nome:"Casting — videoclip musicale", cat:"Casting", d:[2026,9,22], ora:"15:00", luogo:"Studio 54, Via Watt 15", chi:"Riot Film", prezzo:"Retribuito", fonte:"Casting call", note:"Cercasi 6 ballerini/e, ogni genere. Riprese previste 4–5 novembre. Compenso comunicato in sede di selezione." },
+  { nome:"Open Class Waacking", cat:"Open Class", d:[2026,9,24], ora:"20:00–21:30", luogo:"Mosso, Via Angelo Mosso 3", chi:"Giulia Panza", prezzo:"12 €", fonte:"@mossomilano", note:"Open level, focus su musicalità e arm control." },
+  { nome:"Rassegna Danza Urbana — ultima serata", cat:"Eventi", d:[2026,9,28], ora:"20:30", luogo:"Triennale Milano", chi:"Triennale", prezzo:"18 €", fonte:"@triennalemilano", note:"Tre corti coreografici e incontro con gli autori a seguire." }
+];
+
+const LUOGHI = ["DanceHaus","Spazio Tondelli","Blue Studio","Fabbrica del Vapore","Base Milano","Teatro Elfo Puccini","Scuola Paolo Grassi","Mosso","Teatro Out Off","Triennale Milano","Teatro Nuovo","Studio 54","Zona Tortona","NoLo","Isola","Bicocca"];
+const HOW = [
+  { t:"Raccogliamo", d:"Studi, teatri, compagnie e organizzatori pubblicano ovunque. Noi guardiamo in un posto solo, ogni giorno.", color:"#2F6BFF" },
+  { t:"Verifichiamo", d:"Ogni voce è controllata alla fonte: profilo dell'organizzatore o pagina ufficiale. Se non torna, non entra.", color:"#FFCE3B" },
+  { t:"Pubblichiamo", d:"Nome, categoria, data, ora, luogo, insegnante, prezzo e link. Nient'altro.", color:"#FF3B21" },
+  { t:"Aggiorniamo", d:"Il calendario cambia ogni giorno. Le date cancellate spariscono, quelle nuove entrano entro 24 ore.", color:"#F5F5F0" }
+];
+
+class Component extends DCLogic {
+  state = { filter:"Tutti", month:9, year:2026, sel:null, pct:0, loaderY:"0%", loaderGone:false, counts:[0,0,0,0], feat:0, open:0, clock:"--:--:--" };
+
+  componentDidMount() {
+    const tick = () => {
+      this.setState(s => {
+        const p = Math.min(100, s.pct + Math.random() * 9 + 4);
+        if (p >= 100) {
+          clearInterval(this._p);
+          setTimeout(() => this.setState({ loaderY:"-100%" }), 260);
+          setTimeout(() => { this.setState({ loaderGone:true }); this.runCounters(); }, 1150);
+        }
+        return { pct:p };
+      });
+    };
+    this._p = setInterval(tick, 90);
+    this._c = setInterval(() => this.setState({ clock:new Date().toLocaleTimeString("it-IT", { timeZone:"Europe/Rome", hour12:false }) }), 1000);
+    this._f = setInterval(() => this.setState(s => ({ feat:(s.feat + 1) % 3 })), 4200);
+  }
+  componentWillUnmount() { clearInterval(this._p); clearInterval(this._c); clearInterval(this._f); clearInterval(this._n); }
+
+  runCounters() {
+    const target = [12, 5, 4, 3];
+    let step = 0;
+    this._n = setInterval(() => {
+      step++;
+      const k = Math.min(1, step / 26);
+      const e = 1 - Math.pow(1 - k, 3);
+      this.setState({ counts: target.map(t => Math.round(t * e)) });
+      if (k === 1) clearInterval(this._n);
+    }, 34);
+  }
+
+  renderVals() {
+    const dense = (this.props.listDensity ?? "Comodo") === "Compatto";
+    const showPrices = this.props.showPrices ?? true;
+    const { filter, month, year, sel, pct, loaderY, loaderGone, counts, feat, open, clock } = this.state;
+
+    const inMonth = EVENTI.filter(e => e.d[1] === month && e.d[0] === year);
+    const cnt = { "Tutti":inMonth.length, "Open Class":0, "Eventi":0, "Casting":0 };
+    inMonth.forEach(e => cnt[e.cat]++);
+
+    const filters = ["Tutti","Open Class","Eventi","Casting"].map(label => {
+      const on = filter === label;
+      const c = CAT[label] || "#F5F5F0";
+      return { label, count:cnt[label], onClick:() => this.setState({ filter:label }),
+        bg: on ? (label === "Tutti" ? "#F5F5F0" : c) : "transparent",
+        fg: on ? (label === "Open Class" ? "#FFFFFF" : "#0A0A0A") : "#8A8A85",
+        border: on ? "transparent" : "#2B2B2B" };
+    });
+
+    const mk = e => ({
+      day:String(e.d[2]).padStart(2,"0"), mon:MES3[e.d[1]], nome:e.nome, categoria:e.cat, color:CAT[e.cat],
+      meta:e.ora + "  ·  " + e.luogo + "  ·  " + e.chi,
+      dateShort:e.d[2] + " " + MES3[e.d[1]].toLowerCase() + " · " + e.ora,
+      prezzoLabel: showPrices ? e.prezzo : "",
+      pad: dense ? "12px" : "17px",
+      onClick:(ev) => { ev.preventDefault(); this.setState({ sel:e }); }
+    });
+
+    const visible = inMonth.filter(e => filter === "Tutti" || e.cat === filter).sort((a,b) => a.d[2] - b.d[2]).map(mk);
+
+    const featSrc = EVENTI.slice(0,3);
+    const fe = featSrc[feat];
+    const white = fe.cat === "Casting";
+    const feature = Object.assign(mk(fe), { bg: white ? "#F7F7F2" : "#141414", fg: white ? "#0A0A0A" : "#F5F5F0" });
+
+    const first = new Date(year, month, 1);
+    const offset = (first.getDay() + 6) % 7;
+    const dim = new Date(year, month + 1, 0).getDate();
+    const prevDim = new Date(year, month, 0).getDate();
+    const cells = [];
+    for (let i = 0; i < 42; i++) {
+      const n = i - offset + 1;
+      const cur = n >= 1 && n <= dim;
+      const day = cur ? EVENTI.filter(e => e.d[0] === year && e.d[1] === month && e.d[2] === n && (filter === "Tutti" || e.cat === filter)) : [];
+      cells.push({
+        label: cur ? String(n).padStart(2,"0") : String(n < 1 ? prevDim + n : n - dim).padStart(2,"0"),
+        marks: day.map(e => ({ color:CAT[e.cat] })),
+        bg: cur ? "#0C0C0C" : "#0F0F0F",
+        numColor: cur ? "#F5F5F0" : "#3A3A38",
+        onClick: () => { if (day.length) this.setState({ sel:day[0] }); }
+      });
+    }
+    if (cells.slice(35).every(c => c.marks.length === 0 && c.numColor === "#3A3A38")) cells.length = 35;
+
+    let detail = null;
+    if (sel) {
+      const w = sel.cat === "Casting";
+      detail = {
+        nome:sel.nome, categoria:sel.cat, color:CAT[sel.cat], note:sel.note, source:"Fonte: " + sel.fonte,
+        bg: w ? "#F7F7F2" : "#0A0A0A", fg: w ? "#0A0A0A" : "#F5F5F0",
+        rule: w ? "#D8D8D0" : "#1E1E1E", watermark: w ? "#E8E8E0" : "#161616",
+        ctaFg: sel.cat === "Open Class" ? "#FFFFFF" : "#0A0A0A",
+        fields:[
+          { k:"Data", v:sel.d[2] + " " + MESI[sel.d[1]] + " " + sel.d[0] },
+          { k:"Ora", v:sel.ora },
+          { k:"Luogo", v:sel.luogo },
+          { k:sel.cat === "Casting" ? "Organizzatore" : "Insegnante", v:sel.chi },
+          { k:"Prezzo", v:sel.prezzo },
+          { k:"Categoria", v:sel.cat }
+        ]
+      };
+    }
+
+    const p = Math.floor(pct);
+    const loaderLabel = p < 40 ? "Open Class" : p < 75 ? "Eventi" : "Casting";
+    const loader = loaderGone ? null : {
+      pct: String(p).padStart(3,"0"), w: p + "%", y: loaderY,
+      color: CAT[loaderLabel], label: loaderLabel
+    };
+
+    const words = ["Open Class","Casting","Eventi","Workshop"];
+    const row = (shift) => words.concat(words).concat(words).map((w,i) => {
+      const filled = (i + shift) % 3 === 0;
+      const c = CAT[w] || "#FFCE3B";
+      return { label:w, color: filled ? c : "transparent", stroke: filled ? "0" : "1px #262626" };
+    });
+
+    return {
+      clock,
+      monthLabel: MESI[month] + " " + year,
+      monthShort: MES3[month].toLowerCase(),
+      listHeading: (filter === "Tutti" ? "In arrivo" : filter) + " — " + visible.length + " appuntamenti",
+      emptyNote: visible.length ? "" : "Nessun appuntamento in questa categoria per il mese selezionato.",
+      bigRowA: row(0), bigRowB: row(1),
+      marquee: LUOGHI.concat(LUOGHI).map(l => ({ label:l })),
+      stats:[
+        { n:String(counts[0]), k:"Appuntamenti questo mese", color:"#F5F5F0" },
+        { n:String(counts[1]), k:"Open Class", color:CAT["Open Class"] },
+        { n:String(counts[2]), k:"Eventi e workshop", color:CAT["Eventi"] },
+        { n:String(counts[3]), k:"Casting aperti", color:CAT["Casting"] }
+      ],
+      catCards:[
+        { label:"Open Class", idx:"01", color:CAT["Open Class"], count:cnt["Open Class"], desc:"Classi aperte, ogni stile, ogni livello.", onClick:(e) => { e.preventDefault(); this.setState({ filter:"Open Class" }); } },
+        { label:"Eventi", idx:"02", color:CAT["Eventi"], count:cnt["Eventi"], desc:"Spettacoli, jam, rassegne e workshop.", onClick:(e) => { e.preventDefault(); this.setState({ filter:"Eventi" }); } },
+        { label:"Casting", idx:"03", color:CAT["Casting"], count:cnt["Casting"], desc:"Audizioni e selezioni aperte in città.", onClick:(e) => { e.preventDefault(); this.setState({ filter:"Casting" }); } }
+      ],
+      ticks: [0,1,2].map(i => ({ bg: i === feat ? "#F5F5F0" : "#2B2B2B", onClick:() => this.setState({ feat:i }) })),
+      how: HOW.map((h,i) => ({ n:"0" + (i+1), t:h.t, d:h.d, color:h.color, open:open === i, sign: open === i ? "−" : "+", onClick:() => this.setState({ open: open === i ? -1 : i }) })),
+      feature, filters, cells, visible, detail, loader,
+      closeDetail: () => this.setState({ sel:null }),
+      prevMonth: () => this.setState(s => ({ month:s.month === 0 ? 11 : s.month - 1, year:s.month === 0 ? s.year - 1 : s.year })),
+      nextMonth: () => this.setState(s => ({ month:s.month === 11 ? 0 : s.month + 1, year:s.month === 11 ? s.year + 1 : s.year }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>
