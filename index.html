@@ -1,461 +1,629 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
+<title>Milano Movement Hub</title>
+<meta name="description" content="Calendario di open class, casting ed eventi di danza a Milano, verificati alla fonte.">
+<style>
+  :root{
+    --bg:#0A0A0A; --panel:#0C0C0C; --panel-2:#0F0F0F; --line:#1A1A1A; --line-2:#2B2B2B; --line-3:#191919;
+    --text:#F5F5F0; --dim:#8A8A85; --dimmer:#6E6E69; --dimmest:#5E5E5A; --faint:#3A3A38; --ghost:#161616;
+    --blue:#2F6BFF; --yellow:#FFCE3B; --red:#FF3B21;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:'Archivo',Helvetica,Arial,sans-serif; overflow-x:hidden; -webkit-font-smoothing:antialiased;}
+  a{color:inherit; text-decoration:none;}
+  a:hover{opacity:.8;}
+  button{font-family:inherit;}
+  ::selection{background:var(--blue); color:#fff;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:1280px; margin:0 auto; padding-inline:24px;}
+  h1,h2{text-wrap:balance;}
+  [hidden]{display:none!important;}
+
+  @keyframes mqL{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes mqR{from{transform:translateX(-50%);}to{transform:translateX(0);}}
+  @keyframes rise{from{opacity:0; transform:translateY(28px);}to{opacity:1; transform:translateY(0);}}
+  @keyframes blink{0%,60%{opacity:1;}61%,100%{opacity:.15;}}
+  @keyframes heroIn{from{opacity:0; transform:translateY(70%);}to{opacity:1; transform:translateY(0);}}
+  @media (prefers-reduced-motion:reduce){
+    .mq-track{animation:none!important;}
+    [data-anim]{animation:none!important; opacity:1!important; transform:none!important;}
+  }
+
+  header{position:sticky; top:env(safe-area-inset-top,0px); z-index:30; background:rgba(10,10,10,.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--line);}
+  .hdr-row{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px 24px; flex-wrap:wrap; row-gap:8px;}
+  .logo{font-size:20px; font-weight:800; letter-spacing:-0.045em;}
+  .hdr-left{display:flex; align-items:center; gap:16px; flex-wrap:wrap; row-gap:6px;}
+  .clockchip{font-size:11px; letter-spacing:.12em; color:var(--dimmer); display:flex; gap:9px; align-items:center; white-space:nowrap;}
+  .dot{width:6px; height:6px; background:var(--blue); display:block; animation:blink 1.6s steps(1) infinite;}
+  .navlinks{display:flex; align-items:center; gap:10px; font-size:11px; letter-spacing:.09em; text-transform:uppercase;}
+  .btn-line{padding:9px 15px; border:1px solid var(--line-2); color:#C9C9C4; transition:.25s;}
+  .btn-line:hover{border-color:var(--text); color:var(--text); opacity:1;}
+  .btn-solid{padding:9px 15px; background:var(--text); color:var(--bg); font-weight:600;}
+  .btn-solid:hover{opacity:.88;}
+
+  .hero{padding:64px 24px 0;}
+  .hero h1{margin:0; font-size:clamp(38px,8.4vw,112px); line-height:.94; letter-spacing:-.055em; font-weight:700;}
+  .hero h1.dim{color:var(--dimmer);}
+  .hero-sub{display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap; margin-top:38px;}
+  .hero-sub p{margin:0; font-size:13.5px; line-height:1.75; color:var(--dim); max-width:46ch;}
+  .hero-ctas{display:flex; gap:12px; flex-wrap:wrap; font-size:12px; letter-spacing:.08em; text-transform:uppercase; align-items:flex-start;}
+  .cta-solid{padding:14px 24px; background:var(--text); color:var(--bg); font-weight:600;}
+  .cta-line{padding:14px 24px; border:1px solid var(--line-2);}
+  .cta-line:hover{border-color:var(--text);}
+
+  .mq{padding-top:56px; overflow:hidden;}
+  .mq-track{display:flex; width:max-content;}
+  .mq-track.l{animation:mqL 26s linear infinite;}
+  .mq-track.r{animation:mqR 32s linear infinite; margin-top:6px;}
+  .mq-word{font-size:clamp(48px,11vw,140px); font-weight:800; letter-spacing:-.055em; line-height:1; padding-right:40px; white-space:nowrap;}
+
+  .stats{padding-top:60px;}
+  .stats-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); border-top:1px solid var(--line);}
+  .stat{padding:24px 20px 24px 0;}
+  .stat .n{font-size:clamp(32px,5vw,54px); font-weight:700; letter-spacing:-.05em; line-height:1; font-variant-numeric:tabular-nums;}
+  .stat .k{font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin-top:11px;}
+
+  .catcards{padding-top:64px;}
+  .catcards-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:12px;}
+  .catcard{position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; gap:50px; min-height:250px; padding:24px; border:1px solid #1E1E1E; cursor:pointer; transition:border-color .3s;}
+  .catcard .top{display:flex; justify-content:space-between; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim);}
+  .catcard .bar{width:26px; height:4px; margin-bottom:16px;}
+  .catcard .lbl{font-size:28px; font-weight:700; letter-spacing:-.035em; line-height:1;}
+  .catcard .desc{font-size:12px; color:var(--dim); margin-top:11px; line-height:1.6;}
+
+  .cal{padding-top:80px;}
+  .cal-head{display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;}
+  .cal-head h2{margin:0; font-size:clamp(24px,4vw,40px); line-height:1; letter-spacing:-.045em; font-weight:700;}
+  .cal-nav{display:flex; gap:8px;}
+  .navbtn{background:transparent; border:1px solid var(--line-2); color:var(--text); width:34px; height:34px; cursor:pointer; transition:.25s;}
+  .navbtn:hover{border-color:var(--text);}
+  .fresh{font-size:11px; color:var(--dimmest); margin-top:8px;}
+  .filters{display:flex; gap:8px; flex-wrap:wrap; margin-top:24px;}
+  .filter{font-size:11px; letter-spacing:.1em; text-transform:uppercase; padding:10px 15px; cursor:pointer; border:1px solid var(--line-2); background:transparent; color:var(--dim); transition:.2s;}
+  .filter .n{opacity:.55; margin-left:3px;}
+  .cal-body{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); border:1px solid var(--line); margin-top:20px; background:var(--panel);}
+  .cal-left{padding:22px; border-right:1px solid var(--line);}
+  .wk{display:grid; grid-template-columns:repeat(7,1fr); gap:1px; font-size:10px; letter-spacing:.12em; color:var(--dimmest); text-transform:uppercase; margin-bottom:8px;}
+  .grid{display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line-3); border:1px solid var(--line-3);}
+  .cell{background:var(--panel-2); min-height:64px; padding:7px 8px; cursor:pointer; display:flex; flex-direction:column; gap:4px; transition:background .2s;}
+  .cell:hover{background:var(--ghost);}
+  .cell .num{font-size:12px;}
+  .marks{display:flex; flex-direction:column; gap:3px;}
+  .mark{height:4px;}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:16px; font-size:11px; color:var(--dim);}
+  .legend span{display:flex; align-items:center; gap:7px;}
+  .sw{width:10px; height:10px; display:block;}
+  .cal-right{padding:22px; display:flex; flex-direction:column;}
+  .list-h{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--dimmest); padding-bottom:11px; border-bottom:1px solid var(--line);}
+  .ev-row{display:grid; grid-template-columns:52px minmax(0,1fr) auto; gap:13px; align-items:start; padding:15px 6px; margin:0 -6px; border-bottom:1px solid var(--ghost); cursor:pointer; transition:background .2s;}
+  .ev-row:hover{background:#141414;}
+  .ev-date{border-left:3px solid; padding-left:8px;}
+  .ev-date .d{font-size:17px; font-weight:500; line-height:1;}
+  .ev-date .m{font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--dimmest); margin-top:4px;}
+  .ev-mid .nm{font-size:15px; font-weight:600; letter-spacing:-.012em;}
+  .ev-mid .mt{font-size:11.5px; color:var(--dim); margin-top:4px; line-height:1.5;}
+  .ev-right{text-align:right; font-size:11px; white-space:nowrap;}
+  .ev-right .cg{letter-spacing:.08em; text-transform:uppercase;}
+  .ev-right .pz{color:var(--dim); margin-top:4px;}
+  .empty-note{font-size:11px; color:var(--dimmest); padding-top:14px;}
+
+  .feat{padding-top:80px;}
+  .feat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:30px; align-items:start;}
+  .feat-eyebrow{font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim);}
+  .feat h2{margin:14px 0 0; font-size:clamp(24px,4vw,40px); line-height:1.03; letter-spacing:-.045em; font-weight:700;}
+  .ticks{display:flex; gap:6px; margin-top:22px;}
+  .tick{height:3px; width:36px; background:var(--line-2); cursor:pointer;}
+  .feat-card{display:block; padding:28px; background:#141414; color:var(--text); min-height:250px; cursor:pointer; transition:background .4s;}
+  .feat-card .top{display:flex; justify-content:space-between; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;}
+  .feat-card .nm{font-size:clamp(22px,3.4vw,36px); font-weight:700; letter-spacing:-.04em; line-height:1.05; margin-top:46px;}
+  .feat-card .mt{font-size:12px; margin-top:16px; line-height:1.65; opacity:.72;}
+  .feat-card .more{font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; margin-top:22px;}
+
+  .lmq{padding-top:80px; overflow:hidden;}
+  .lmq-track{display:flex; width:max-content; animation:mqL 34s linear infinite; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:16px 0;}
+  .lmq-item{font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--dimmest); padding:0 22px; white-space:nowrap;}
+
+  .how{padding-top:72px;}
+  .how-eyebrow{font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim);}
+  .how-list{border-top:1px solid var(--line); margin-top:20px;}
+  .how-row{border-bottom:1px solid var(--line); padding:22px 0; cursor:pointer; display:grid; grid-template-columns:48px minmax(0,1fr) 26px; gap:16px; align-items:start; transition:opacity .25s;}
+  .how-row:hover{opacity:.78;}
+  .how-n{font-size:11px;}
+  .how-t{font-size:clamp(18px,2.6vw,26px); font-weight:600; letter-spacing:-.03em;}
+  .how-d{font-size:12.5px; line-height:1.75; color:var(--dim); margin-top:12px; max-width:62ch;}
+  .how-sign{font-size:17px; text-align:right; color:var(--dim);}
+
+  .segnala{padding-top:72px;}
+  .segnala-box{border:1px solid var(--line); padding:clamp(26px,6vw,60px); display:flex; gap:28px; align-items:flex-end; justify-content:space-between; flex-wrap:wrap;}
+  .segnala h2{margin:0; font-size:clamp(24px,4.4vw,44px); line-height:1.03; letter-spacing:-.045em; font-weight:700; max-width:19ch;}
+  .segnala p{margin:14px 0 0; font-size:13px; color:var(--dim); line-height:1.7; max-width:52ch;}
+  .segnala-ctas{display:flex; gap:12px; flex-wrap:wrap; font-size:12px; letter-spacing:.08em; text-transform:uppercase;}
+  .seg-email{display:flex; align-items:center; gap:8px; padding:14px 20px; border:1px solid var(--line-2); background:transparent; color:var(--text); cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.02em; text-transform:none;}
+  .seg-email:hover{border-color:var(--text);}
+
+  footer{margin-top:72px; border-top:1px solid var(--line);}
+  .foot-grid{padding:36px 24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:24px; font-size:12px; line-height:2; color:var(--dim);}
+  .foot-h{color:var(--text); letter-spacing:.14em; text-transform:uppercase; font-size:10.5px;}
+  .foot-wordmark{overflow:hidden; height:150px; position:relative; border-top:1px solid var(--line);}
+  .foot-wordmark .big{position:absolute; left:-.04em; bottom:-.28em; font-size:clamp(120px,27vw,320px); font-weight:800; letter-spacing:-.06em; line-height:.8; color:var(--ghost); user-select:none; white-space:nowrap;}
+  .foot-wordmark .sm{position:absolute; right:20px; bottom:16px; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--dimmest); text-align:right;}
+
+  .overlay{position:fixed; inset:0; z-index:70; overflow:auto; display:flex; flex-direction:column; animation:rise .4s cubic-bezier(.16,1,.3,1) both;}
+  .ov-top{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; border-bottom:1px solid var(--line);}
+  .ov-close{background:transparent; border:1px solid var(--line-2); color:inherit; font-size:11px; letter-spacing:.12em; text-transform:uppercase; padding:9px 14px; cursor:pointer;}
+  .ov-title{padding:48px 24px 36px; border-bottom:1px solid var(--line); width:100%; max-width:1280px; margin:0 auto;}
+  .ov-title .cg{font-size:11px; letter-spacing:.14em; text-transform:uppercase;}
+  .ov-title h2{margin:14px 0 0; font-size:clamp(28px,5.5vw,56px); line-height:1.02; letter-spacing:-.045em; font-weight:700; max-width:20ch;}
+  .ov-fields{width:100%; max-width:1280px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); border-bottom:1px solid var(--line);}
+  .ov-field{padding:20px 22px; border-right:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .ov-field .k{font-size:10px; letter-spacing:.14em; text-transform:uppercase; opacity:.55;}
+  .ov-field .v{font-size:16px; font-weight:500; margin-top:7px; letter-spacing:-.01em;}
+  .ov-cta{width:100%; max-width:1280px; margin:0 auto; padding:24px; display:flex; gap:14px; flex-wrap:wrap; align-items:center;}
+  .ov-src-link{font-size:12px; letter-spacing:.1em; text-transform:uppercase; padding:13px 20px;}
+  .ov-src-text{font-size:11px; opacity:.55;}
+  .ov-note{width:100%; max-width:70ch; margin:0 auto 0 0; padding:0 24px 36px; font-size:12.5px; line-height:1.8; opacity:.78;}
+
+  .loader{position:fixed; inset:0; z-index:90; background:var(--bg); color:var(--text); display:flex; flex-direction:column; justify-content:space-between; padding:24px; transition:transform .8s cubic-bezier(.76,0,.24,1);}
+  .loader-top{display:flex; justify-content:space-between; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dimmer);}
+  .loader-pct{font-family:'Archivo',Helvetica,sans-serif; font-size:clamp(64px,20vw,220px); font-weight:800; letter-spacing:-.06em; line-height:.85; font-variant-numeric:tabular-nums;}
+  .loader-bar{height:2px; background:#1E1E1E; margin-bottom:14px;}
+  .loader-fill{height:2px; transition:width .1s linear;}
+  .loader-bottom{display:flex; justify-content:space-between; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dimmer);}
+
+  @media (max-width:700px){
+    .hdr-row{padding:12px 16px;}
+    .wrap,.hero,.mq,.stats,.catcards,.cal,.feat,.how,.segnala{padding-left:0; padding-right:0;}
+    body{padding-inline:16px;}
+    .hero,.mq,.stats,.catcards,.cal,.feat,.how,.segnala{padding-inline:0;}
+  }
+</style>
 </head>
 <body>
-<x-dc>
-<helmet>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  html, body { margin:0; padding:0; background:#0A0A0A; }
-  * { box-sizing:border-box; }
-  a { color:inherit; text-decoration:none; }
-  a:hover { opacity:.8; }
-  ::selection { background:#2F6BFF; color:#fff; }
-  @keyframes mmh-mq-l { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-  @keyframes mmh-mq-r { from { transform:translateX(-50%); } to { transform:translateX(0); } }
-  @keyframes mmh-rise { from { opacity:0; transform:translateY(34px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes mmh-wipe { from { clip-path:inset(0 100% 0 0); } to { clip-path:inset(0 0 0 0); } }
-  @keyframes mmh-prog { from { transform:scaleX(0); } to { transform:scaleX(1); } }
-  @keyframes mmh-blink { 0%,60% { opacity:1; } 61%,100% { opacity:.15; } }
-  @keyframes mmh-hero { from { opacity:0; transform:translateY(90%); } to { opacity:1; transform:translateY(0); } }
-</style>
-</helmet>
 
-<div style="background:#0A0A0A; color:#F5F5F0; font-family:Archivo, Helvetica, Arial, sans-serif; overflow-x:hidden;">
+<div class="loader" id="loader">
+  <div class="loader-top"><span>Milano Movement Hub</span><span>Fase 1</span></div>
+  <div class="loader-pct mono" id="loaderPct">000</div>
+  <div>
+    <div class="loader-bar"><div class="loader-fill" id="loaderFill" style="width:0%; background:var(--blue);"></div></div>
+    <div class="loader-bottom mono"><span id="loaderLabel" style="color:var(--blue);">Open Class</span><span>Carico il calendario</span></div>
+  </div>
+</div>
 
-  <div style="position:fixed; top:0; left:0; right:0; height:2px; background:#FFCE3B; transform-origin:0 50%; z-index:40; animation:mmh-prog linear; animation-timeline:scroll(root);"></div>
-
-  <header style="position:sticky; top:0; z-index:30; background:rgba(10,10,10,0.9); backdrop-filter:blur(12px); border-bottom:1px solid #1A1A1A;">
-    <div style="max-width:1280px; margin:0 auto; padding:13px 24px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
-      <div style="display:flex; align-items:center; gap:30px;">
-        <span style="font-size:20px; font-weight:800; letter-spacing:-0.045em;">MMH</span>
-        <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.12em; color:#6E6E69; display:flex; gap:9px; align-items:center;"><span style="width:6px; height:6px; background:#2F6BFF; display:block; animation:mmh-blink 1.6s steps(1) infinite;"></span>Milano · {{ clock }}</span>
+<div id="app" style="opacity:0;">
+  <header>
+    <div class="hdr-row wrap" style="padding-inline:0;">
+      <div class="hdr-left">
+        <span class="logo">MMH</span>
+        <span class="clockchip mono"><span class="dot"></span>Milano · <span id="clock">--:--:--</span></span>
       </div>
-      <div style="display:flex; align-items:center; gap:10px; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.09em; text-transform:uppercase;">
-        <a href="#calendario" style="padding:9px 15px; border:1px solid #2B2B2B; color:#C9C9C4; transition:.25s;" style-hover="border-color:#F5F5F0; color:#F5F5F0;">Calendario</a>
-        <a href="#segnala" style="padding:9px 15px; background:#F5F5F0; color:#0A0A0A; font-weight:600;">Segnala</a>
+      <div class="navlinks mono">
+        <a href="#calendario" class="btn-line">Calendario</a>
+        <a href="#segnala" class="btn-solid">Segnala</a>
       </div>
     </div>
   </header>
 
-  <section style="padding:88px 24px 0; max-width:1280px; margin:0 auto;">
-    <div style="overflow:hidden;"><h1 style="margin:0; font-size:clamp(40px, 8.4vw, 116px); line-height:0.92; letter-spacing:-0.055em; font-weight:700; animation:mmh-hero .95s cubic-bezier(.16,1,.3,1) .9s both;">La danza a Milano,</h1></div>
-    <div style="overflow:hidden;"><h1 style="margin:0; font-size:clamp(40px, 8.4vw, 116px); line-height:0.92; letter-spacing:-0.055em; font-weight:700; color:#6E6E69; animation:mmh-hero .95s cubic-bezier(.16,1,.3,1) 1.05s both;">in un calendario solo.</h1></div>
-    <div style="display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap; margin-top:44px; animation:mmh-hero .9s cubic-bezier(.16,1,.3,1) 1.25s both;">
-      <p style="margin:0; font-family:'IBM Plex Mono', monospace; font-size:13.5px; line-height:1.75; color:#8A8A85; max-width:46ch;">Open class, casting ed eventi verificati alla fonte. Aggiornato ogni giorno. Nessun account, nessuna iscrizione.</p>
-      <div style="display:flex; gap:12px; flex-wrap:wrap; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; align-items:start;">
-        <a href="#calendario" style="padding:14px 24px; background:#F5F5F0; color:#0A0A0A; font-weight:600;">Apri il calendario</a>
-        <a href="#segnala" style="padding:14px 24px; border:1px solid #2B2B2B;" style-hover="border-color:#F5F5F0;">Segnala</a>
+  <section class="hero wrap">
+    <div style="overflow:hidden;"><h1 data-anim style="animation:heroIn .9s cubic-bezier(.16,1,.3,1) .15s both;">La danza a Milano,</h1></div>
+    <div style="overflow:hidden;"><h1 class="dim" data-anim style="animation:heroIn .9s cubic-bezier(.16,1,.3,1) .3s both;">in un calendario solo.</h1></div>
+    <div class="hero-sub" data-anim style="animation:rise .8s cubic-bezier(.16,1,.3,1) .5s both;">
+      <p class="mono">Open class, casting ed eventi verificati alla fonte. Aggiornato a mano finché il volume resta basso, presto in automatico. Nessun account, nessuna iscrizione.</p>
+      <div class="hero-ctas mono">
+        <a href="#calendario" class="cta-solid">Apri il calendario</a>
+        <a href="#segnala" class="cta-line">Segnala</a>
       </div>
     </div>
   </section>
 
-  <section style="padding:72px 0 0; overflow:hidden;">
-    <div style="display:flex; width:max-content; animation:mmh-mq-l 26s linear infinite;">
-      <sc-for list="{{ bigRowA }}" as="w" hint-placeholder-count="8">
-        <span style="font-size:clamp(56px, 11vw, 150px); font-weight:800; letter-spacing:-0.055em; line-height:1; padding-right:44px; white-space:nowrap; color:{{ w.color }}; -webkit-text-stroke:{{ w.stroke }};">{{ w.label }}</span>
-      </sc-for>
-    </div>
-    <div style="display:flex; width:max-content; animation:mmh-mq-r 32s linear infinite; margin-top:6px;">
-      <sc-for list="{{ bigRowB }}" as="w" hint-placeholder-count="8">
-        <span style="font-size:clamp(56px, 11vw, 150px); font-weight:800; letter-spacing:-0.055em; line-height:1; padding-right:44px; white-space:nowrap; color:{{ w.color }}; -webkit-text-stroke:{{ w.stroke }};">{{ w.label }}</span>
-      </sc-for>
-    </div>
+  <section class="mq">
+    <div class="mq-track l" id="mqA"></div>
+    <div class="mq-track r" id="mqB"></div>
   </section>
 
-  <section style="max-width:1280px; margin:0 auto; padding:72px 24px 0;">
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); border-top:1px solid #1A1A1A;">
-      <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
-        <div style="padding:26px 22px 26px 0; animation:mmh-rise .7s cubic-bezier(.16,1,.3,1) both; animation-timeline:view(); animation-range:entry 5% cover 25%;">
-          <div style="font-size:clamp(34px, 5vw, 58px); font-weight:700; letter-spacing:-0.05em; line-height:1; color:{{ s.color }}; font-variant-numeric:tabular-nums;">{{ s.n }}</div>
-          <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#8A8A85; margin-top:12px;">{{ s.k }}</div>
-        </div>
-      </sc-for>
-    </div>
+  <section class="stats wrap">
+    <div class="stats-grid" id="statsGrid"></div>
   </section>
 
-  <section style="max-width:1280px; margin:0 auto; padding:80px 24px 0;">
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
-      <sc-for list="{{ catCards }}" as="c" hint-placeholder-count="3">
-        <a href="#calendario" onClick="{{ c.onClick }}" style="position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; gap:60px; min-height:270px; padding:24px; border:1px solid #1E1E1E; transition:border-color .3s;" style-hover="border-color:{{ c.color }};" style-before="content:''; position:absolute; inset:0; background:{{ c.color }}; transform:translateY(101%); transition:transform .45s cubic-bezier(.76,0,.24,1);">
-          <div style="position:relative; display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#8A8A85;">
-            <span>{{ c.idx }}</span><span>{{ c.count }} in {{ monthShort }}</span>
-          </div>
-          <div style="position:relative;">
-            <div style="width:26px; height:4px; background:{{ c.color }}; margin-bottom:18px;"></div>
-            <div style="font-size:30px; font-weight:700; letter-spacing:-0.035em; line-height:1;">{{ c.label }}</div>
-            <div style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#8A8A85; margin-top:12px; line-height:1.65;">{{ c.desc }}</div>
-          </div>
-        </a>
-      </sc-for>
-    </div>
+  <section class="catcards wrap">
+    <div class="catcards-grid" id="catCards"></div>
   </section>
 
-  <section id="calendario" style="max-width:1280px; margin:0 auto; padding:88px 24px 0;">
-    <div style="display:flex; align-items:end; justify-content:space-between; gap:24px; flex-wrap:wrap;">
-      <h2 style="margin:0; font-size:clamp(26px, 4vw, 44px); line-height:1; letter-spacing:-0.045em; font-weight:700; animation:mmh-wipe .9s cubic-bezier(.76,0,.24,1) both; animation-timeline:view(); animation-range:entry 5% cover 25%;">{{ monthLabel }}</h2>
-      <div style="display:flex; gap:8px;">
-        <button onClick="{{ prevMonth }}" style="background:transparent; border:1px solid #2B2B2B; color:#F5F5F0; width:34px; height:34px; cursor:pointer; font-family:'IBM Plex Mono', monospace; transition:.25s;" style-hover="border-color:#F5F5F0;">‹</button>
-        <button onClick="{{ nextMonth }}" style="background:transparent; border:1px solid #2B2B2B; color:#F5F5F0; width:34px; height:34px; cursor:pointer; font-family:'IBM Plex Mono', monospace; transition:.25s;" style-hover="border-color:#F5F5F0;">›</button>
+  <section class="cal wrap" id="calendario">
+    <div class="cal-head">
+      <h2 id="monthLabel">—</h2>
+      <div class="cal-nav">
+        <button class="navbtn mono" id="prevMonth">‹</button>
+        <button class="navbtn mono" id="nextMonth">›</button>
       </div>
     </div>
-
-    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:26px;">
-      <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
-        <button onClick="{{ f.onClick }}" style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:10px 16px; cursor:pointer; border:1px solid {{ f.border }}; background:{{ f.bg }}; color:{{ f.fg }}; transition:.25s;">{{ f.label }} <span style="opacity:.5;">{{ f.count }}</span></button>
-      </sc-for>
-    </div>
-
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(310px, 1fr)); border:1px solid #1A1A1A; margin-top:22px; background:#0C0C0C;">
-      <div style="padding:24px; border-right:1px solid #1A1A1A;">
-        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:1px; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.12em; color:#5E5E5A; text-transform:uppercase; margin-bottom:8px;">
-          <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
-        </div>
-        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:1px; background:#191919; border:1px solid #191919;">
-          <sc-for list="{{ cells }}" as="cell" hint-placeholder-count="35">
-            <div onClick="{{ cell.onClick }}" style="background:{{ cell.bg }}; min-height:72px; padding:7px 8px; cursor:pointer; display:flex; flex-direction:column; gap:5px; transition:background .2s;" style-hover="background:#161616;">
-              <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:{{ cell.numColor }};">{{ cell.label }}</span>
-              <div style="display:flex; flex-direction:column; gap:3px;">
-                <sc-for list="{{ cell.marks }}" as="mark" hint-placeholder-count="0">
-                  <div style="height:4px; background:{{ mark.color }};"></div>
-                </sc-for>
-              </div>
-            </div>
-          </sc-for>
-        </div>
-        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:18px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:#8A8A85;">
-          <span style="display:flex; align-items:center; gap:7px;"><span style="width:10px; height:10px; background:#2F6BFF; display:block;"></span>Open Class</span>
-          <span style="display:flex; align-items:center; gap:7px;"><span style="width:10px; height:10px; background:#FFCE3B; display:block;"></span>Eventi</span>
-          <span style="display:flex; align-items:center; gap:7px;"><span style="width:10px; height:10px; background:#FF3B21; display:block;"></span>Casting</span>
+    <div class="fresh mono" id="fresh"></div>
+    <div class="filters mono" id="filters"></div>
+    <div class="cal-body">
+      <div class="cal-left">
+        <div class="wk mono"><div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div></div>
+        <div class="grid" id="grid"></div>
+        <div class="legend mono">
+          <span><span class="sw" style="background:var(--blue);"></span>Open Class</span>
+          <span><span class="sw" style="background:var(--yellow);"></span>Eventi</span>
+          <span><span class="sw" style="background:var(--red);"></span>Casting</span>
         </div>
       </div>
-
-      <div style="padding:24px; display:flex; flex-direction:column;">
-        <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#5E5E5A; padding-bottom:12px; border-bottom:1px solid #1A1A1A;">{{ listHeading }}</div>
-        <sc-for list="{{ visible }}" as="ev" hint-placeholder-count="6">
-          <a href="#evento" onClick="{{ ev.onClick }}" style="display:grid; grid-template-columns:56px minmax(0,1fr) auto; gap:14px; align-items:start; padding:{{ ev.pad }} 8px; margin:0 -8px; border-bottom:1px solid #161616; cursor:pointer; transition:background .2s;" style-hover="background:#141414;">
-            <div style="font-family:'IBM Plex Mono', monospace; border-left:3px solid {{ ev.color }}; padding-left:9px;">
-              <div style="font-size:18px; font-weight:500; line-height:1;">{{ ev.day }}</div>
-              <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#5E5E5A; margin-top:4px;">{{ ev.mon }}</div>
-            </div>
-            <div style="min-width:0;">
-              <div style="font-size:15.5px; font-weight:600; letter-spacing:-0.012em;">{{ ev.nome }}</div>
-              <div style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#8A8A85; margin-top:5px; line-height:1.55;">{{ ev.meta }}</div>
-            </div>
-            <div style="text-align:right; font-family:'IBM Plex Mono', monospace; font-size:11px; white-space:nowrap;">
-              <div style="color:{{ ev.color }}; letter-spacing:0.08em; text-transform:uppercase;">{{ ev.categoria }}</div>
-              <div style="color:#8A8A85; margin-top:5px;">{{ ev.prezzoLabel }}</div>
-            </div>
-          </a>
-        </sc-for>
-        <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#5E5E5A; padding-top:16px;">{{ emptyNote }}</div>
+      <div class="cal-right">
+        <div class="list-h mono" id="listHeading">—</div>
+        <div id="evList"></div>
+        <div class="empty-note mono" id="emptyNote"></div>
       </div>
     </div>
   </section>
 
-  <section style="max-width:1280px; margin:0 auto; padding:88px 24px 0;">
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:34px; align-items:start;">
+  <section class="feat wrap">
+    <div class="feat-grid">
       <div>
-        <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase; color:#8A8A85;">In evidenza</div>
-        <h2 style="margin:16px 0 0; font-size:clamp(26px, 4vw, 44px); line-height:1.02; letter-spacing:-0.045em; font-weight:700;">Il prossimo appuntamento</h2>
-        <div style="display:flex; gap:6px; margin-top:26px;">
-          <sc-for list="{{ ticks }}" as="t" hint-placeholder-count="3">
-            <div onClick="{{ t.onClick }}" style="height:3px; width:40px; background:{{ t.bg }}; cursor:pointer;"></div>
-          </sc-for>
-        </div>
+        <div class="feat-eyebrow mono">In evidenza</div>
+        <h2>Il prossimo appuntamento</h2>
+        <div class="ticks" id="ticks"></div>
       </div>
-      <a href="#evento" onClick="{{ feature.onClick }}" style="display:block; padding:30px; background:{{ feature.bg }}; color:{{ feature.fg }}; min-height:280px; cursor:pointer; transition:background .4s;">
-        <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase;">
-          <span>{{ feature.categoria }}</span><span>{{ feature.dateShort }}</span>
-        </div>
-        <div style="font-size:clamp(24px, 3.4vw, 40px); font-weight:700; letter-spacing:-0.04em; line-height:1.05; margin-top:56px;">{{ feature.nome }}</div>
-        <div style="font-family:'IBM Plex Mono', monospace; font-size:12.5px; margin-top:18px; line-height:1.7; opacity:.72;">{{ feature.meta }}</div>
-        <div style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase; margin-top:26px;">Dettagli →</div>
-      </a>
+      <a href="#" class="feat-card mono" id="featCard"></a>
     </div>
   </section>
 
-  <section style="padding:88px 0 0; overflow:hidden;">
-    <div style="display:flex; width:max-content; animation:mmh-mq-l 34s linear infinite; border-top:1px solid #1A1A1A; border-bottom:1px solid #1A1A1A; padding:18px 0;">
-      <sc-for list="{{ marquee }}" as="m" hint-placeholder-count="20">
-        <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:#5E5E5A; padding:0 24px; white-space:nowrap;">{{ m.label }}</span>
-      </sc-for>
-    </div>
+  <section class="lmq">
+    <div class="lmq-track" id="lmqTrack"></div>
   </section>
 
-  <section id="come" style="max-width:1280px; margin:0 auto; padding:80px 24px 0;">
-    <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase; color:#8A8A85;">Come funziona</div>
-    <div style="border-top:1px solid #1A1A1A; margin-top:22px;">
-      <sc-for list="{{ how }}" as="h" hint-placeholder-count="4">
-        <div onClick="{{ h.onClick }}" style="border-bottom:1px solid #1A1A1A; padding:24px 0; cursor:pointer; display:grid; grid-template-columns:54px minmax(0,1fr) 30px; gap:18px; align-items:start; transition:opacity .25s;" style-hover="opacity:.75;">
-          <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:{{ h.color }};">{{ h.n }}</div>
-          <div>
-            <div style="font-size:clamp(19px, 2.6vw, 28px); font-weight:600; letter-spacing:-0.03em;">{{ h.t }}</div>
-            <sc-if value="{{ h.open }}" hint-placeholder-val="{{ false }}">
-              <div style="font-family:'IBM Plex Mono', monospace; font-size:12.5px; line-height:1.8; color:#8A8A85; margin-top:14px; max-width:62ch; animation:mmh-rise .45s cubic-bezier(.16,1,.3,1) both;">{{ h.d }}</div>
-            </sc-if>
-          </div>
-          <div style="font-family:'IBM Plex Mono', monospace; font-size:18px; text-align:right; color:#8A8A85;">{{ h.sign }}</div>
-        </div>
-      </sc-for>
-    </div>
+  <section class="how wrap" id="come">
+    <div class="how-eyebrow mono">Come funziona</div>
+    <div class="how-list" id="howList"></div>
   </section>
 
-  <section id="segnala" style="max-width:1280px; margin:80px auto 0; padding:0 24px;">
-    <div style="border:1px solid #1A1A1A; padding:clamp(30px, 6vw, 68px); display:flex; gap:30px; align-items:end; justify-content:space-between; flex-wrap:wrap; animation:mmh-rise .8s cubic-bezier(.16,1,.3,1) both; animation-timeline:view(); animation-range:entry 5% cover 30%;">
+  <section class="segnala wrap" id="segnala">
+    <div class="segnala-box" data-anim>
       <div>
-        <h2 style="margin:0; font-size:clamp(26px, 4.4vw, 48px); line-height:1.02; letter-spacing:-0.045em; font-weight:700; max-width:19ch;">Organizzi una classe, un casting o un evento?</h2>
-        <p style="margin:16px 0 0; font-family:'IBM Plex Mono', monospace; font-size:13px; color:#8A8A85; line-height:1.7; max-width:52ch;">Mandaci data, ora, luogo e link. Verifichiamo alla fonte e lo pubblichiamo in calendario.</p>
+        <h2>Organizzi una classe, un casting o un evento?</h2>
+        <p class="mono">Mandaci data, ora, luogo e link. Verifichiamo alla fonte e lo pubblichiamo in calendario.</p>
       </div>
-      <div style="display:flex; gap:12px; flex-wrap:wrap; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.08em; text-transform:uppercase;">
-        <a href="#" style="padding:15px 26px; background:#F5F5F0; color:#0A0A0A; font-weight:600;">Invia segnalazione</a>
-        <a href="#" style="padding:15px 26px; border:1px solid #2B2B2B;" style-hover="border-color:#F5F5F0;">Scrivici in DM</a>
+      <div class="segnala-ctas">
+        <a href="https://ig.me/m/milanomovement_hub" target="_blank" rel="noopener" class="cta-solid">Scrivici in DM</a>
+        <button class="seg-email" id="copyEmail" type="button">milanomovementhub@gmail.com <span id="copyState" style="opacity:.6;">— copia</span></button>
       </div>
     </div>
   </section>
 
-  <footer style="margin-top:80px; border-top:1px solid #1A1A1A;">
-    <div style="max-width:1280px; margin:0 auto; padding:40px 24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:26px; font-family:'IBM Plex Mono', monospace; font-size:12px; line-height:2; color:#8A8A85;">
-      <div><div style="color:#F5F5F0; letter-spacing:0.14em; text-transform:uppercase; font-size:10.5px;">Categorie</div><a href="#calendario">Open Class</a><br><a href="#calendario">Casting</a><br><a href="#calendario">Eventi</a></div>
-      <div><div style="color:#F5F5F0; letter-spacing:0.14em; text-transform:uppercase; font-size:10.5px;">Progetto</div><a href="#come">Come funziona</a><br><a href="#segnala">Segnala</a></div>
-      <div><div style="color:#F5F5F0; letter-spacing:0.14em; text-transform:uppercase; font-size:10.5px;">Contatti</div><a href="#">Instagram</a><br><a href="#">Email</a></div>
-      <div><div style="color:#F5F5F0; letter-spacing:0.14em; text-transform:uppercase; font-size:10.5px;">Stato</div>Fase 1<br>{{ clock }} · Milano</div>
+  <footer>
+    <div class="foot-grid wrap" style="padding-inline:0;">
+      <div><div class="foot-h">Categorie</div><a href="#calendario" data-filter="Open Class">Open Class</a><br><a href="#calendario" data-filter="Casting">Casting</a><br><a href="#calendario" data-filter="Eventi">Eventi</a></div>
+      <div><div class="foot-h">Progetto</div><a href="#come">Come funziona</a><br><a href="#segnala">Segnala</a></div>
+      <div><div class="foot-h">Contatti</div><a href="https://instagram.com/milanomovement_hub" target="_blank" rel="noopener">Instagram</a><br><a href="#segnala">Email</a></div>
+      <div><div class="foot-h">Stato</div>Fase 1<br><span id="clock2">--:--:--</span> · Milano</div>
     </div>
-    <div style="overflow:hidden; height:190px; position:relative; border-top:1px solid #1A1A1A;">
-      <div style="position:absolute; left:-0.04em; bottom:-0.3em; font-size:clamp(150px, 27vw, 350px); font-weight:800; letter-spacing:-0.06em; line-height:0.8; color:#161616; user-select:none; white-space:nowrap;">MMH</div>
-      <div style="position:absolute; right:24px; bottom:20px; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#5E5E5A; text-align:right;">Milano Movement Hub<br>2026</div>
+    <div class="foot-wordmark">
+      <div class="big">MMH</div>
+      <div class="sm mono">Milano Movement Hub<br>2026</div>
     </div>
   </footer>
 </div>
 
-<sc-if value="{{ detail }}" hint-placeholder-val="{{ false }}">
-  <div style="position:fixed; inset:0; background:{{ detail.bg }}; color:{{ detail.fg }}; z-index:70; overflow:auto; font-family:Archivo, Helvetica, Arial, sans-serif; display:flex; flex-direction:column; animation:mmh-rise .45s cubic-bezier(.16,1,.3,1) both;">
-    <div style="display:flex; align-items:center; justify-content:space-between; padding:18px 24px; border-bottom:1px solid {{ detail.rule }};">
-      <span style="font-size:20px; font-weight:800; letter-spacing:-0.045em;">MMH</span>
-      <button onClick="{{ closeDetail }}" style="background:transparent; border:1px solid {{ detail.rule }}; color:inherit; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; padding:9px 14px; cursor:pointer;">Chiudi ✕</button>
-    </div>
-    <div style="padding:56px 24px 40px; border-bottom:1px solid {{ detail.rule }}; width:100%; max-width:1280px; margin:0 auto;">
-      <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:{{ detail.color }};">{{ detail.categoria }}</div>
-      <h2 style="margin:16px 0 0; font-size:clamp(30px, 5.5vw, 62px); line-height:1; letter-spacing:-0.045em; font-weight:700; max-width:20ch;">{{ detail.nome }}</h2>
-    </div>
-    <div style="width:100%; max-width:1280px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); border-bottom:1px solid {{ detail.rule }};">
-      <sc-for list="{{ detail.fields }}" as="field" hint-placeholder-count="6">
-        <div style="padding:22px 24px; border-right:1px solid {{ detail.rule }}; border-bottom:1px solid {{ detail.rule }};">
-          <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; opacity:.55;">{{ field.k }}</div>
-          <div style="font-size:17px; font-weight:500; margin-top:8px; letter-spacing:-0.01em;">{{ field.v }}</div>
-        </div>
-      </sc-for>
-    </div>
-    <div style="width:100%; max-width:1280px; margin:0 auto; padding:28px 24px; display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
-      <a href="#" style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; padding:14px 22px; background:{{ detail.color }}; color:{{ detail.ctaFg }};">Vai alla fonte ↗</a>
-      <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; opacity:.55;">{{ detail.source }}</span>
-    </div>
-    <div style="width:100%; max-width:70ch; margin:0 auto 0 0; padding:0 24px 40px; font-family:'IBM Plex Mono', monospace; font-size:12.5px; line-height:1.8; opacity:.75;">{{ detail.note }}</div>
-    <div style="margin-top:auto; overflow:hidden; height:170px; position:relative;">
-      <div style="position:absolute; left:-0.04em; bottom:-0.3em; font-size:clamp(140px, 25vw, 320px); font-weight:800; letter-spacing:-0.06em; line-height:0.8; color:{{ detail.watermark }}; user-select:none; white-space:nowrap;">MMH</div>
-    </div>
-  </div>
-</sc-if>
+<div id="overlayRoot"></div>
 
-<sc-if value="{{ loader }}" hint-placeholder-val="{{ true }}">
-  <div style="position:fixed; inset:0; z-index:90; background:#0A0A0A; color:#F5F5F0; display:flex; flex-direction:column; justify-content:space-between; padding:26px 24px; font-family:'IBM Plex Mono', monospace; transform:translateY({{ loader.y }}); transition:transform .85s cubic-bezier(.76,0,.24,1);">
-    <div style="display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6E6E69;">
-      <span>Milano Movement Hub</span><span>Fase 1</span>
-    </div>
-    <div style="font-family:Archivo, Helvetica, sans-serif; font-size:clamp(70px, 20vw, 240px); font-weight:800; letter-spacing:-0.06em; line-height:0.85; font-variant-numeric:tabular-nums;">{{ loader.pct }}</div>
-    <div>
-      <div style="height:2px; background:#1E1E1E; margin-bottom:16px;"><div style="height:2px; background:{{ loader.color }}; width:{{ loader.w }}; transition:width .1s linear;"></div></div>
-      <div style="display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6E6E69;">
-        <span style="color:{{ loader.color }};">{{ loader.label }}</span><span>Carico il calendario</span>
-      </div>
-    </div>
-  </div>
-</sc-if>
+<script>
+(function(){
+  "use strict";
+  var linkGoogleFonts = document.createElement('link');
+  linkGoogleFonts.rel = 'stylesheet';
+  linkGoogleFonts.href = 'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap';
+  document.head.appendChild(linkGoogleFonts);
 
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;showPrices&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Lista&quot;},&quot;listDensity&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Comodo&quot;,&quot;Compatto&quot;],&quot;default&quot;:&quot;Comodo&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Lista&quot;}}">
-const CAT = { "Open Class":"#2F6BFF", "Eventi":"#FFCE3B", "Casting":"#FF3B21" };
-const MESI = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-const MES3 = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+  var CAT = { "Open Class":"#2F6BFF", "Eventi":"#FFCE3B", "Casting":"#FF3B21" };
+  var MESI = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+  var MES3 = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
 
-const EVENTI = [
-  { nome:"Open Class Contemporaneo — intermedio", cat:"Open Class", d:[2026,9,1], ora:"19:00–20:30", luogo:"DanceHaus, Via Savona 17", chi:"Chiara Bersani", prezzo:"15 €", fonte:"@dancehausmilano", note:"Livello intermedio. Portare calzini o piedi nudi. Posti limitati, prenotazione via DM." },
-  { nome:"Casting — corpo di ballo produzione TV", cat:"Casting", d:[2026,9,3], ora:"10:00", luogo:"Teatro Nuovo, Piazza San Babila", chi:"Produzione Mediaset", prezzo:"Gratuito", fonte:"Bando ufficiale", note:"Età 18–30. Presentarsi con abbigliamento da sala, foto e CV stampati. Selezione su classe di jazz e tratto libero." },
-  { nome:"Heels Open Class", cat:"Open Class", d:[2026,9,5], ora:"20:00–21:30", luogo:"Spazio Tondelli, Via Padova 44", chi:"Marta Riva", prezzo:"18 €", fonte:"@spaziotondelli", note:"Tacchi consigliati ma non obbligatori. Ginocchiere utili." },
-  { nome:"Workshop Floorwork con Léa Tirabasso", cat:"Eventi", d:[2026,9,7], ora:"11:00–16:00", luogo:"Fabbrica del Vapore", chi:"Léa Tirabasso", prezzo:"75 €", fonte:"@fabbricadelvapore", note:"Workshop intensivo di una giornata, pausa pranzo inclusa. Iscrizione obbligatoria entro il 3 ottobre." },
-  { nome:"Open Class Urban / Hip Hop", cat:"Open Class", d:[2026,9,9], ora:"19:30–21:00", luogo:"Blue Studio, Via Tortona 31", chi:"Kevin Osei", prezzo:"15 €", fonte:"@bluestudiomi", note:"Open level. Si consiglia arrivo 15 minuti prima." },
-  { nome:"Casting — compagnia contemporanea, stagione 26/27", cat:"Casting", d:[2026,9,12], ora:"09:30", luogo:"Teatro Elfo Puccini", chi:"Compagnia Zerogrammi", prezzo:"Gratuito", fonte:"Bando ufficiale", note:"Due fasi: classe al mattino, materiale di repertorio nel pomeriggio. Inviare CV e showreel prima dell'audizione." },
-  { nome:"Milano Dance Night — serata aperta", cat:"Eventi", d:[2026,9,15], ora:"21:00", luogo:"Base Milano, Via Bergognone 34", chi:"Base Milano", prezzo:"10 €", fonte:"@basemilano", note:"Serata aperta con performance brevi e jam finale. Ingresso libero fino a esaurimento posti." },
-  { nome:"Open Class Classico", cat:"Open Class", d:[2026,9,16], ora:"10:00–11:30", luogo:"Scuola Paolo Grassi, Via Salasco 4", chi:"Anna Cerruti", prezzo:"14 €", fonte:"@scuolapaolograssi", note:"Sbarra e centro. Livello avanzato." },
-  { nome:"Workshop Improvvisazione e composizione", cat:"Eventi", d:[2026,9,20], ora:"14:00–18:00", luogo:"Teatro Out Off", chi:"Silvia Gribaudi", prezzo:"60 €", fonte:"@teatrooutoff", note:"Focus su improvvisazione strutturata e composizione istantanea. Aperto anche a non professionisti." },
-  { nome:"Casting — videoclip musicale", cat:"Casting", d:[2026,9,22], ora:"15:00", luogo:"Studio 54, Via Watt 15", chi:"Riot Film", prezzo:"Retribuito", fonte:"Casting call", note:"Cercasi 6 ballerini/e, ogni genere. Riprese previste 4–5 novembre. Compenso comunicato in sede di selezione." },
-  { nome:"Open Class Waacking", cat:"Open Class", d:[2026,9,24], ora:"20:00–21:30", luogo:"Mosso, Via Angelo Mosso 3", chi:"Giulia Panza", prezzo:"12 €", fonte:"@mossomilano", note:"Open level, focus su musicalità e arm control." },
-  { nome:"Rassegna Danza Urbana — ultima serata", cat:"Eventi", d:[2026,9,28], ora:"20:30", luogo:"Triennale Milano", chi:"Triennale", prezzo:"18 €", fonte:"@triennalemilano", note:"Tre corti coreografici e incontro con gli autori a seguire." }
-];
+  // Snapshot reale dal Google Calendar "Milano Movement Hub", preso l'1 ottobre 2026 alle 18:00.
+  // Non e' un collegamento live: per ora viene aggiornato a mano da chi gestisce MMH.
+  var EVENTI = [
+    { id:"alessia", nome:"Alessia Erba", cat:"Open Class", d:[2026,9,2], ora:"21:15–22:45", luogo:"Area Dance Milano", chi:"Alessia Erba", prezzo:"Da verificare", fonte:"@altura_dancecrew", fonteUrl:"https://instagram.com/altura_dancecrew", note:"Open class settimanale di @altura_dancecrew — questa settimana con Alessia Erba. Stile e livello da verificare." },
+    { id:"fierce1", nome:"Miriana Laruccia · Kekko Talotti", cat:"Open Class", d:[2026,9,3], ora:"11:30–16:30", luogo:"Centro d'Arte Sauvage / AIM Academy", chi:"Miriana Laruccia, poi Kekko Talotti", prezzo:"Da verificare", fonte:"@fierce_on_heels", fonteUrl:"https://instagram.com/fierce_on_heels", note:"11:30–13:30 Miriana Laruccia · 14:30–16:30 Kekko Talotti." },
+    { id:"daniele", nome:"Daniele Sibilli — Contemporaneo", cat:"Open Class", d:[2026,9,3], ora:"11:45–13:15", luogo:"Accademia Arte Danza APD", chi:"Daniele Sibilli", prezzo:"Da verificare", fonte:"@danielesibilli", fonteUrl:"https://instagram.com/danielesibilli", note:"" },
+    { id:"mary", nome:"Mary Molfese — Heels", cat:"Open Class", d:[2026,9,3], ora:"12:00–15:00", luogo:"Imbonati 11 Art Hub", chi:"Mary Molfese", prezzo:"Da verificare", fonte:"DM insegnante", fonteUrl:null, note:"Heels. Livello e prezzo non indicati, da verificare." },
+    { id:"banana1", nome:"Banana", cat:"Open Class", d:[2026,9,3], ora:"14:00–15:30", luogo:"Moto Armonico, Cornate d'Adda", chi:"Banana", prezzo:"Da verificare", fonte:"MMH", fonteUrl:null, note:"Fuori Milano (Cornate d'Adda). Stile e prezzo non indicati — info e prenotazioni in DM." },
+    { id:"federico1", nome:"Federico Milaan — Commercial", cat:"Open Class", d:[2026,9,3], ora:"15:00–16:30", luogo:"Accademia Arte Danza APD", chi:"Federico Milaan", prezzo:"Da verificare", fonte:"@federicomilaan", fonteUrl:"https://instagram.com/federicomilaan", note:"" },
+    { id:"tommi", nome:"Tommi Gavi", cat:"Open Class", d:[2026,9,3], ora:"15:00–17:30", luogo:"Studio Underground Srl", chi:"Tommi Gavi", prezzo:"Da verificare", fonte:"@tommigavi", fonteUrl:"https://instagram.com/tommigavi", note:"Stile non indicato, da verificare." },
+    { id:"jesus", nome:"Jesus Guia — Hip hop", cat:"Open Class", d:[2026,9,3], ora:"16:45–18:15", luogo:"Accademia Arte Danza APD", chi:"Jesus Guia", prezzo:"Da verificare", fonte:"@jesus_guia10", fonteUrl:"https://instagram.com/jesus_guia10", note:"" },
+    { id:"kum", nome:"Kum — Hip hop", cat:"Open Class", d:[2026,9,4], ora:"10:00–11:30", luogo:"Accademia Arte Danza APD", chi:"Kum", prezzo:"Da verificare", fonte:"@kum.ooo", fonteUrl:"https://instagram.com/kum.ooo", note:"" },
+    { id:"fierce2", nome:"Jessica Sala · Savane Boisliveau", cat:"Open Class", d:[2026,9,4], ora:"10:45–16:45", luogo:"Centro d'Arte Sauvage / AIM Academy", chi:"Jessica Sala, poi Savane Boisliveau", prezzo:"Da verificare", fonte:"@fierce_on_heels", fonteUrl:"https://instagram.com/fierce_on_heels", note:"10:45–12:45 Jessica Sala · pausa · 14:15–16:45 Savane Boisliveau." },
+    { id:"vittoria", nome:"Vittoria Markov — Modern", cat:"Open Class", d:[2026,9,4], ora:"11:45–13:15", luogo:"Accademia Arte Danza APD", chi:"Vittoria Markov", prezzo:"Da verificare", fonte:"@vittoriamarkov", fonteUrl:"https://instagram.com/vittoriamarkov", note:"" },
+    { id:"groovay", nome:"Groovay — Banana", cat:"Eventi", d:[2026,9,4], ora:"15:00–18:30", luogo:"MS Dance Factory", chi:"Agnese e Yusef, poi Banana", prezzo:"Da verificare", fonte:"@_groovay_", fonteUrl:"https://instagram.com/_groovay_", note:"15:00–16:30 Agnese e Yusef · 16:30–18:00 Banana · 18:00–18:30 Q&A." },
+    { id:"mauro", nome:"Mauro Savino", cat:"Open Class", d:[2026,9,4], ora:"15:00–16:30", luogo:"Accademia Arte Danza APD", chi:"Mauro Savino", prezzo:"Da verificare", fonte:"@mauro.savino", fonteUrl:"https://instagram.com/mauro.savino", note:"Stile non indicato, da verificare." },
+    { id:"thomas", nome:"Thomas Catellani — Hip hop", cat:"Open Class", d:[2026,9,6], ora:"21:30–22:30", luogo:"Maestra Dance Studio", chi:"Thomas Catellani", prezzo:"Da verificare", fonte:"MMH", fonteUrl:null, note:"Orario inserito in Notion solo come giorno — verificare l'ora esatta." },
+    { id:"arianna1", nome:"Arianna Chiocchetti — Heels", cat:"Open Class", d:[2026,9,9], ora:"16:00–17:30", luogo:"OrmarsLab", chi:"Arianna Chiocchetti", prezzo:"15 € a lezione + 20 € quota associativa una tantum", fonte:"MMH", fonteUrl:null, note:"Prima di quattro date. Zona e indirizzo esatto di OrmarsLab da verificare." },
+    { id:"altura1", nome:"Altura Dance Crew — Open Class", cat:"Open Class", d:[2026,9,9], ora:"21:15–22:45", luogo:"Area Dance Milano", chi:"Da confermare", prezzo:"Da verificare", fonte:"@altura_dancecrew", fonteUrl:"https://instagram.com/altura_dancecrew", note:"Open class settimanale, insegnante di questa data ancora da confermare." },
+    { id:"marianabonn", nome:"Mariana Bonn — Heels Intensive", cat:"Open Class", d:[2026,9,10], ora:"11:00–17:00", luogo:"MOMA Studios Milano", chi:"Mariana Bonn", prezzo:"Da verificare", fonte:"MMH", fonteUrl:null, note:"11:00–13:30 livello intermedio · 14:30–17:00 livello base. \"Le Bon — Heels Intensive\", 1 di 8. Zona e prezzo da verificare." },
+    { id:"chanelle1", nome:"Chanelle Anth", cat:"Open Class", d:[2026,9,10], ora:"15:00–18:00", luogo:"MS Dance Factory", chi:"Chanelle Anth", prezzo:"Da verificare", fonte:"@chanelleanth", fonteUrl:"https://instagram.com/chanelleanth", note:"Stile non indicato, da verificare." },
+    { id:"alturalab", nome:"Altura Lab vol. 05", cat:"Eventi", d:[2026,9,11], ora:"Da verificare", luogo:"Accademia Arte Danza, San Giuliano Milanese", chi:"rxl.lmb, xtomsxx_, orlando gfnk, sasha spiro, stroscioo_", prezzo:"Da verificare", fonte:"@altura_dancecrew", fonteUrl:"https://instagram.com/altura_dancecrew", note:"Prenotazione obbligatoria via DM a @altura_dancecrew o @elev8_dancestudio_. Orario, stile e prezzo da verificare." },
+    { id:"chanelle2", nome:"Chanelle Anth", cat:"Open Class", d:[2026,9,11], ora:"15:00–18:00", luogo:"MS Dance Factory", chi:"Chanelle Anth", prezzo:"Da verificare", fonte:"@chanelleanth", fonteUrl:"https://instagram.com/chanelleanth", note:"Stile non indicato, da verificare." },
+    { id:"yanis1", nome:"Yanis Marshall — Heels Intensive", cat:"Open Class", d:[2026,9,12], ora:"12:30–16:00", luogo:"Centro d'Arte Sauvage / AIM Academy", chi:"Yanis Marshall", prezzo:"Da verificare", fonte:"@yanismarshall", fonteUrl:"https://instagram.com/yanismarshall", note:"" },
+    { id:"yanis2", nome:"Yanis Marshall — Heels Intensive", cat:"Open Class", d:[2026,9,13], ora:"12:30–16:00", luogo:"Centro d'Arte Sauvage / AIM Academy", chi:"Yanis Marshall", prezzo:"Da verificare", fonte:"@yanismarshall", fonteUrl:"https://instagram.com/yanismarshall", note:"" },
+    { id:"federico2", nome:"Federico Milaan — Commercial", cat:"Open Class", d:[2026,9,13], ora:"13:00–14:30", luogo:"Area Dance", chi:"Federico Milaan", prezzo:"Da verificare", fonte:"@federicomilaan", fonteUrl:"https://instagram.com/federicomilaan", note:"Livello intermediate/advanced. Prenotazione tramite app Area Dance. Prima data della pop-up class." },
+    { id:"yanis3", nome:"Yanis Marshall — Heels Intensive", cat:"Open Class", d:[2026,9,14], ora:"12:30–16:00", luogo:"Centro d'Arte Sauvage / AIM Academy", chi:"Yanis Marshall", prezzo:"Da verificare", fonte:"@yanismarshall", fonteUrl:"https://instagram.com/yanismarshall", note:"" },
+    { id:"yanis4", nome:"Yanis Marshall — Heels Intensive", cat:"Open Class", d:[2026,9,15], ora:"12:30–16:00", luogo:"Centro d'Arte Sauvage / AIM Academy", chi:"Yanis Marshall", prezzo:"Da verificare", fonte:"@yanismarshall", fonteUrl:"https://instagram.com/yanismarshall", note:"" },
+    { id:"arianna2", nome:"Arianna Chiocchetti — Heels", cat:"Open Class", d:[2026,9,16], ora:"16:00–17:30", luogo:"OrmarsLab", chi:"Arianna Chiocchetti", prezzo:"15 € a lezione + 20 € quota associativa una tantum", fonte:"MMH", fonteUrl:null, note:"Seconda di quattro date." },
+    { id:"altura2", nome:"Altura Dance Crew — Open Class", cat:"Open Class", d:[2026,9,16], ora:"21:15–22:45", luogo:"Area Dance Milano", chi:"Da confermare", prezzo:"Da verificare", fonte:"@altura_dancecrew", fonteUrl:"https://instagram.com/altura_dancecrew", note:"Open class settimanale, insegnante di questa data ancora da confermare." },
+    { id:"ndl", nome:"NDL Heels Formation", cat:"Open Class", d:[2026,9,17], ora:"11:00–14:00", luogo:"Imbonati 11 — Art Hub", chi:"NDL Heels Formation", prezzo:"Da verificare", fonte:"@ndl_heelsformation", fonteUrl:"https://instagram.com/ndl_heelsformation", note:"" },
+    { id:"zoto", nome:"Zoto — Afro", cat:"Open Class", d:[2026,9,17], ora:"16:00–17:00", luogo:"Studio Underground Dance Room, Vimodrone", chi:"Zoto", prezzo:"Da verificare", fonte:"@zoto_asmn", fonteUrl:"https://instagram.com/zoto_asmn", note:"Prenotazione obbligatoria via IG @studiounderground_danceroom, valida solo dopo il pagamento. Posti limitati (max 30)." },
+    { id:"arianna3", nome:"Arianna Chiocchetti — Heels", cat:"Open Class", d:[2026,9,23], ora:"16:00–17:30", luogo:"OrmarsLab", chi:"Arianna Chiocchetti", prezzo:"15 € a lezione + 20 € quota associativa una tantum", fonte:"MMH", fonteUrl:null, note:"Terza di quattro date." },
+    { id:"altura3", nome:"Altura Dance Crew — Open Class", cat:"Open Class", d:[2026,9,23], ora:"21:15–22:45", luogo:"Area Dance Milano", chi:"Da confermare", prezzo:"Da verificare", fonte:"@altura_dancecrew", fonteUrl:"https://instagram.com/altura_dancecrew", note:"Open class settimanale, insegnante di questa data ancora da confermare." },
+    { id:"federico3", nome:"Federico Milaan — Commercial", cat:"Open Class", d:[2026,9,27], ora:"13:00–14:30", luogo:"Area Dance", chi:"Federico Milaan", prezzo:"Da verificare", fonte:"@federicomilaan", fonteUrl:"https://instagram.com/federicomilaan", note:"Seconda data della stessa pop-up class (prima: 13 ottobre)." },
+    { id:"arianna4", nome:"Arianna Chiocchetti — Heels", cat:"Open Class", d:[2026,9,30], ora:"16:00–17:30", luogo:"OrmarsLab", chi:"Arianna Chiocchetti", prezzo:"15 € a lezione + 20 € quota associativa una tantum", fonte:"MMH", fonteUrl:null, note:"Quarta e ultima data." },
+    { id:"altura4", nome:"Altura Dance Crew — Open Class", cat:"Open Class", d:[2026,9,30], ora:"21:15–22:45", luogo:"Area Dance Milano", chi:"Da confermare", prezzo:"Da verificare", fonte:"@altura_dancecrew", fonteUrl:"https://instagram.com/altura_dancecrew", note:"Open class settimanale, insegnante di questa data ancora da confermare." }
+  ];
+  EVENTI.sort(function(a,b){ return (a.d[0]*372 + a.d[1]*31 + a.d[2]) - (b.d[0]*372 + b.d[1]*31 + b.d[2]); });
 
-const LUOGHI = ["DanceHaus","Spazio Tondelli","Blue Studio","Fabbrica del Vapore","Base Milano","Teatro Elfo Puccini","Scuola Paolo Grassi","Mosso","Teatro Out Off","Triennale Milano","Teatro Nuovo","Studio 54","Zona Tortona","NoLo","Isola","Bicocca"];
-const HOW = [
-  { t:"Raccogliamo", d:"Studi, teatri, compagnie e organizzatori pubblicano ovunque. Noi guardiamo in un posto solo, ogni giorno.", color:"#2F6BFF" },
-  { t:"Verifichiamo", d:"Ogni voce è controllata alla fonte: profilo dell'organizzatore o pagina ufficiale. Se non torna, non entra.", color:"#FFCE3B" },
-  { t:"Pubblichiamo", d:"Nome, categoria, data, ora, luogo, insegnante, prezzo e link. Nient'altro.", color:"#FF3B21" },
-  { t:"Aggiorniamo", d:"Il calendario cambia ogni giorno. Le date cancellate spariscono, quelle nuove entrano entro 24 ore.", color:"#F5F5F0" }
-];
+  var LUOGHI = Array.from(new Set(EVENTI.map(function(e){return e.luogo;})));
 
-class Component extends DCLogic {
-  state = { filter:"Tutti", month:9, year:2026, sel:null, pct:0, loaderY:"0%", loaderGone:false, counts:[0,0,0,0], feat:0, open:0, clock:"--:--:--" };
+  var HOW = [
+    { t:"Raccogliamo", d:"Studi, scuole, coreografi e organizzatori pubblicano ovunque. Noi guardiamo in un posto solo, ogni settimana.", color:CAT["Open Class"] },
+    { t:"Verifichiamo", d:"Ogni voce e' controllata alla fonte: profilo dell'insegnante o pagina ufficiale. Quello che manca resta segnato \"da verificare\", non viene inventato.", color:CAT["Eventi"] },
+    { t:"Pubblichiamo", d:"Nome, categoria, data, ora, luogo, insegnante e prezzo quando disponibile. Niente classifiche, niente giudizi.", color:CAT["Casting"] },
+    { t:"Aggiorniamo", d:"Il calendario cambia con le informazioni reali che arrivano. Oggi a mano, presto in automatico man mano che cresce il volume.", color:"#F5F5F0" }
+  ];
 
-  componentDidMount() {
-    const tick = () => {
-      this.setState(s => {
-        const p = Math.min(100, s.pct + Math.random() * 9 + 4);
-        if (p >= 100) {
-          clearInterval(this._p);
-          setTimeout(() => this.setState({ loaderY:"-100%" }), 260);
-          setTimeout(() => { this.setState({ loaderGone:true }); this.runCounters(); }, 1150);
-        }
-        return { pct:p };
+  var state = { filter:"Tutti", month:9, year:2026, sel:null, feat:0 };
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); }
+  function pad2(n){ return String(n).padStart(2,"0"); }
+
+  function eventsInMonth(month,year){ return EVENTI.filter(function(e){ return e.d[1]===month && e.d[0]===year; }); }
+  function upcoming(){
+    var t0 = new Date(2026,9,1,18,0,0).getTime();
+    return EVENTI.filter(function(e){
+      var end = new Date(e.d[0], e.d[1], e.d[2], 23, 59, 0).getTime();
+      return end >= t0;
+    });
+  }
+
+  function renderMarquee(){
+    var words = ["Open Class","Casting","Eventi","Workshop"];
+    function row(shift){
+      var out = "";
+      words.concat(words).concat(words).forEach(function(w,i){
+        var filled = (i+shift)%3===0;
+        var c = CAT[w] || "#FFCE3B";
+        out += '<span class="mq-word" style="color:'+(filled?c:'transparent')+'; -webkit-text-stroke:'+(filled?'0':'1px #262626')+';">'+esc(w)+'</span>';
       });
-    };
-    this._p = setInterval(tick, 90);
-    this._c = setInterval(() => this.setState({ clock:new Date().toLocaleTimeString("it-IT", { timeZone:"Europe/Rome", hour12:false }) }), 1000);
-    this._f = setInterval(() => this.setState(s => ({ feat:(s.feat + 1) % 3 })), 4200);
-  }
-  componentWillUnmount() { clearInterval(this._p); clearInterval(this._c); clearInterval(this._f); clearInterval(this._n); }
-
-  runCounters() {
-    const target = [12, 5, 4, 3];
-    let step = 0;
-    this._n = setInterval(() => {
-      step++;
-      const k = Math.min(1, step / 26);
-      const e = 1 - Math.pow(1 - k, 3);
-      this.setState({ counts: target.map(t => Math.round(t * e)) });
-      if (k === 1) clearInterval(this._n);
-    }, 34);
+      return out;
+    }
+    document.getElementById('mqA').innerHTML = row(0);
+    document.getElementById('mqB').innerHTML = row(1);
   }
 
-  renderVals() {
-    const dense = (this.props.listDensity ?? "Comodo") === "Compatto";
-    const showPrices = this.props.showPrices ?? true;
-    const { filter, month, year, sel, pct, loaderY, loaderGone, counts, feat, open, clock } = this.state;
+  function renderStats(){
+    var inMonth = eventsInMonth(state.month, state.year);
+    var counts = { "Open Class":0, "Eventi":0, "Casting":0 };
+    inMonth.forEach(function(e){ counts[e.cat]++; });
+    var stats = [
+      { n:String(inMonth.length), k:"Appuntamenti questo mese", c:"#F5F5F0" },
+      { n:String(counts["Open Class"]), k:"Open Class", c:CAT["Open Class"] },
+      { n:String(counts["Eventi"]), k:"Eventi e workshop", c:CAT["Eventi"] },
+      { n:String(counts["Casting"]), k:"Casting aperti", c:CAT["Casting"] }
+    ];
+    document.getElementById('statsGrid').innerHTML = stats.map(function(s){
+      return '<div class="stat"><div class="n" style="color:'+s.c+';">'+s.n+'</div><div class="k mono">'+esc(s.k)+'</div></div>';
+    }).join('');
+  }
 
-    const inMonth = EVENTI.filter(e => e.d[1] === month && e.d[0] === year);
-    const cnt = { "Tutti":inMonth.length, "Open Class":0, "Eventi":0, "Casting":0 };
-    inMonth.forEach(e => cnt[e.cat]++);
+  function renderCatCards(){
+    var inMonth = eventsInMonth(state.month, state.year);
+    var counts = { "Open Class":0, "Eventi":0, "Casting":0 };
+    inMonth.forEach(function(e){ counts[e.cat]++; });
+    var cards = [
+      { label:"Open Class", idx:"01", color:CAT["Open Class"], count:counts["Open Class"], desc:"Classi aperte, ogni stile, ogni livello." },
+      { label:"Eventi", idx:"02", color:CAT["Eventi"], count:counts["Eventi"], desc:"Spettacoli, jam, lab e workshop." },
+      { label:"Casting", idx:"03", color:CAT["Casting"], count:counts["Casting"], desc:"Audizioni e selezioni aperte in citta'." }
+    ];
+    document.getElementById('catCards').innerHTML = cards.map(function(c){
+      return '<a href="#calendario" class="catcard mono" data-setfilter="'+esc(c.label)+'" style="border-color:#1E1E1E;" onmouseover="this.style.borderColor=\''+c.color+'\'" onmouseout="this.style.borderColor=\'#1E1E1E\'">'+
+        '<div class="top"><span>'+c.idx+'</span><span>'+c.count+' in '+esc(MES3[state.month].toLowerCase())+'</span></div>'+
+        '<div><div class="bar" style="background:'+c.color+';"></div><div class="lbl" style="font-family:Archivo;">'+esc(c.label)+'</div><div class="desc">'+esc(c.desc)+'</div></div>'+
+      '</a>';
+    }).join('');
+  }
 
-    const filters = ["Tutti","Open Class","Eventi","Casting"].map(label => {
-      const on = filter === label;
-      const c = CAT[label] || "#F5F5F0";
-      return { label, count:cnt[label], onClick:() => this.setState({ filter:label }),
-        bg: on ? (label === "Tutti" ? "#F5F5F0" : c) : "transparent",
-        fg: on ? (label === "Open Class" ? "#FFFFFF" : "#0A0A0A") : "#8A8A85",
-        border: on ? "transparent" : "#2B2B2B" };
-    });
+  function renderFilters(){
+    var inMonth = eventsInMonth(state.month, state.year);
+    var cnt = { "Tutti":inMonth.length, "Open Class":0, "Eventi":0, "Casting":0 };
+    inMonth.forEach(function(e){ cnt[e.cat]++; });
+    var labels = ["Tutti","Open Class","Eventi","Casting"];
+    document.getElementById('filters').innerHTML = labels.map(function(label){
+      var on = state.filter===label;
+      var c = CAT[label] || "#F5F5F0";
+      var bg = on ? (label==="Tutti" ? "#F5F5F0" : c) : "transparent";
+      var fg = on ? (label==="Open Class" ? "#FFFFFF" : "#0A0A0A") : "#8A8A85";
+      var border = on ? "transparent" : "#2B2B2B";
+      return '<button class="filter" data-setfilter="'+esc(label)+'" style="background:'+bg+'; color:'+fg+'; border-color:'+border+';">'+esc(label)+' <span class="n">'+cnt[label]+'</span></button>';
+    }).join('');
+  }
 
-    const mk = e => ({
-      day:String(e.d[2]).padStart(2,"0"), mon:MES3[e.d[1]], nome:e.nome, categoria:e.cat, color:CAT[e.cat],
-      meta:e.ora + "  ·  " + e.luogo + "  ·  " + e.chi,
-      dateShort:e.d[2] + " " + MES3[e.d[1]].toLowerCase() + " · " + e.ora,
-      prezzoLabel: showPrices ? e.prezzo : "",
-      pad: dense ? "12px" : "17px",
-      onClick:(ev) => { ev.preventDefault(); this.setState({ sel:e }); }
-    });
+  function renderCalendar(){
+    document.getElementById('monthLabel').textContent = MESI[state.month] + ' ' + state.year;
+    document.getElementById('fresh').textContent = 'Dati aggiornati a mano l\'1 ottobre 2026, ore 18:00 · presto in automatico';
 
-    const visible = inMonth.filter(e => filter === "Tutti" || e.cat === filter).sort((a,b) => a.d[2] - b.d[2]).map(mk);
-
-    const featSrc = EVENTI.slice(0,3);
-    const fe = featSrc[feat];
-    const white = fe.cat === "Casting";
-    const feature = Object.assign(mk(fe), { bg: white ? "#F7F7F2" : "#141414", fg: white ? "#0A0A0A" : "#F5F5F0" });
-
-    const first = new Date(year, month, 1);
-    const offset = (first.getDay() + 6) % 7;
-    const dim = new Date(year, month + 1, 0).getDate();
-    const prevDim = new Date(year, month, 0).getDate();
-    const cells = [];
-    for (let i = 0; i < 42; i++) {
-      const n = i - offset + 1;
-      const cur = n >= 1 && n <= dim;
-      const day = cur ? EVENTI.filter(e => e.d[0] === year && e.d[1] === month && e.d[2] === n && (filter === "Tutti" || e.cat === filter)) : [];
+    var first = new Date(state.year, state.month, 1);
+    var offset = (first.getDay() + 6) % 7;
+    var dim = new Date(state.year, state.month+1, 0).getDate();
+    var prevDim = new Date(state.year, state.month, 0).getDate();
+    var cells = [];
+    for(var i=0;i<42;i++){
+      var n = i - offset + 1;
+      var cur = n>=1 && n<=dim;
+      var dayEvents = cur ? EVENTI.filter(function(e){ return e.d[0]===state.year && e.d[1]===state.month && e.d[2]===n && (state.filter==="Tutti" || e.cat===state.filter); }) : [];
       cells.push({
-        label: cur ? String(n).padStart(2,"0") : String(n < 1 ? prevDim + n : n - dim).padStart(2,"0"),
-        marks: day.map(e => ({ color:CAT[e.cat] })),
+        label: cur ? pad2(n) : pad2(n<1 ? prevDim+n : n-dim),
+        marks: dayEvents.map(function(e){ return CAT[e.cat]; }),
         bg: cur ? "#0C0C0C" : "#0F0F0F",
         numColor: cur ? "#F5F5F0" : "#3A3A38",
-        onClick: () => { if (day.length) this.setState({ sel:day[0] }); }
+        firstId: dayEvents.length ? dayEvents[0].id : null
       });
     }
-    if (cells.slice(35).every(c => c.marks.length === 0 && c.numColor === "#3A3A38")) cells.length = 35;
+    if (cells.slice(35).every(function(c){ return c.marks.length===0 && c.numColor==="#3A3A38"; })) cells = cells.slice(0,35);
 
-    let detail = null;
-    if (sel) {
-      const w = sel.cat === "Casting";
-      detail = {
-        nome:sel.nome, categoria:sel.cat, color:CAT[sel.cat], note:sel.note, source:"Fonte: " + sel.fonte,
-        bg: w ? "#F7F7F2" : "#0A0A0A", fg: w ? "#0A0A0A" : "#F5F5F0",
-        rule: w ? "#D8D8D0" : "#1E1E1E", watermark: w ? "#E8E8E0" : "#161616",
-        ctaFg: sel.cat === "Open Class" ? "#FFFFFF" : "#0A0A0A",
-        fields:[
-          { k:"Data", v:sel.d[2] + " " + MESI[sel.d[1]] + " " + sel.d[0] },
-          { k:"Ora", v:sel.ora },
-          { k:"Luogo", v:sel.luogo },
-          { k:sel.cat === "Casting" ? "Organizzatore" : "Insegnante", v:sel.chi },
-          { k:"Prezzo", v:sel.prezzo },
-          { k:"Categoria", v:sel.cat }
-        ]
-      };
-    }
+    document.getElementById('grid').innerHTML = cells.map(function(c){
+      var marksHtml = c.marks.map(function(m){ return '<div class="mark" style="background:'+m+';"></div>'; }).join('');
+      return '<div class="cell mono" '+(c.firstId?('data-openevent="'+c.firstId+'"'):'')+' style="background:'+c.bg+';">'+
+        '<span class="num" style="color:'+c.numColor+';">'+c.label+'</span>'+
+        '<div class="marks">'+marksHtml+'</div>'+
+      '</div>';
+    }).join('');
 
-    const p = Math.floor(pct);
-    const loaderLabel = p < 40 ? "Open Class" : p < 75 ? "Eventi" : "Casting";
-    const loader = loaderGone ? null : {
-      pct: String(p).padStart(3,"0"), w: p + "%", y: loaderY,
-      color: CAT[loaderLabel], label: loaderLabel
-    };
-
-    const words = ["Open Class","Casting","Eventi","Workshop"];
-    const row = (shift) => words.concat(words).concat(words).map((w,i) => {
-      const filled = (i + shift) % 3 === 0;
-      const c = CAT[w] || "#FFCE3B";
-      return { label:w, color: filled ? c : "transparent", stroke: filled ? "0" : "1px #262626" };
-    });
-
-    return {
-      clock,
-      monthLabel: MESI[month] + " " + year,
-      monthShort: MES3[month].toLowerCase(),
-      listHeading: (filter === "Tutti" ? "In arrivo" : filter) + " — " + visible.length + " appuntamenti",
-      emptyNote: visible.length ? "" : "Nessun appuntamento in questa categoria per il mese selezionato.",
-      bigRowA: row(0), bigRowB: row(1),
-      marquee: LUOGHI.concat(LUOGHI).map(l => ({ label:l })),
-      stats:[
-        { n:String(counts[0]), k:"Appuntamenti questo mese", color:"#F5F5F0" },
-        { n:String(counts[1]), k:"Open Class", color:CAT["Open Class"] },
-        { n:String(counts[2]), k:"Eventi e workshop", color:CAT["Eventi"] },
-        { n:String(counts[3]), k:"Casting aperti", color:CAT["Casting"] }
-      ],
-      catCards:[
-        { label:"Open Class", idx:"01", color:CAT["Open Class"], count:cnt["Open Class"], desc:"Classi aperte, ogni stile, ogni livello.", onClick:(e) => { e.preventDefault(); this.setState({ filter:"Open Class" }); } },
-        { label:"Eventi", idx:"02", color:CAT["Eventi"], count:cnt["Eventi"], desc:"Spettacoli, jam, rassegne e workshop.", onClick:(e) => { e.preventDefault(); this.setState({ filter:"Eventi" }); } },
-        { label:"Casting", idx:"03", color:CAT["Casting"], count:cnt["Casting"], desc:"Audizioni e selezioni aperte in città.", onClick:(e) => { e.preventDefault(); this.setState({ filter:"Casting" }); } }
-      ],
-      ticks: [0,1,2].map(i => ({ bg: i === feat ? "#F5F5F0" : "#2B2B2B", onClick:() => this.setState({ feat:i }) })),
-      how: HOW.map((h,i) => ({ n:"0" + (i+1), t:h.t, d:h.d, color:h.color, open:open === i, sign: open === i ? "−" : "+", onClick:() => this.setState({ open: open === i ? -1 : i }) })),
-      feature, filters, cells, visible, detail, loader,
-      closeDetail: () => this.setState({ sel:null }),
-      prevMonth: () => this.setState(s => ({ month:s.month === 0 ? 11 : s.month - 1, year:s.month === 0 ? s.year - 1 : s.year })),
-      nextMonth: () => this.setState(s => ({ month:s.month === 11 ? 0 : s.month + 1, year:s.month === 11 ? s.year + 1 : s.year }))
-    };
+    var inMonth = eventsInMonth(state.month, state.year);
+    var visible = inMonth.filter(function(e){ return state.filter==="Tutti" || e.cat===state.filter; }).slice().sort(function(a,b){ return a.d[2]-b.d[2]; });
+    document.getElementById('listHeading').textContent = (state.filter==="Tutti" ? "In arrivo" : state.filter) + " — " + visible.length + " appuntamenti";
+    document.getElementById('evList').innerHTML = visible.map(function(e){
+      return '<div class="ev-row" data-openevent="'+e.id+'">'+
+        '<div class="ev-date mono" style="border-color:'+CAT[e.cat]+';"><div class="d">'+pad2(e.d[2])+'</div><div class="m">'+MES3[e.d[1]]+'</div></div>'+
+        '<div class="ev-mid"><div class="nm">'+esc(e.nome)+'</div><div class="mt mono">'+esc(e.ora)+'  ·  '+esc(e.luogo)+'</div></div>'+
+        '<div class="ev-right mono"><div class="cg" style="color:'+CAT[e.cat]+';">'+esc(e.cat)+'</div><div class="pz">'+esc(e.prezzo)+'</div></div>'+
+      '</div>';
+    }).join('');
+    document.getElementById('emptyNote').textContent = visible.length ? '' : 'Nessun appuntamento in questa categoria per il mese selezionato.';
   }
-}
 
+  function renderFeature(){
+    var up = upcoming();
+    var featSrc = up.slice(0,3);
+    if (!featSrc.length){ document.getElementById('featCard').innerHTML=''; document.getElementById('ticks').innerHTML=''; return; }
+    var fe = featSrc[state.feat % featSrc.length];
+    var el = document.getElementById('featCard');
+    el.setAttribute('data-openevent', fe.id);
+    el.style.background = "#141414";
+    el.style.color = "var(--text)";
+    el.innerHTML = '<div class="top"><span>'+esc(fe.cat)+'</span><span>'+pad2(fe.d[2])+' '+MES3[fe.d[1]].toLowerCase()+' · '+esc(fe.ora)+'</span></div>'+
+      '<div class="nm">'+esc(fe.nome)+'</div>'+
+      '<div class="mt">'+esc(fe.ora)+'  ·  '+esc(fe.luogo)+'</div>'+
+      '<div class="more">Dettagli →</div>';
+    document.getElementById('ticks').innerHTML = featSrc.map(function(f,i){
+      return '<div class="tick" data-feat="'+i+'" style="background:'+(i===(state.feat%featSrc.length)?'#F5F5F0':'#2B2B2B')+';"></div>';
+    }).join('');
+  }
+
+  function renderLuoghi(){
+    var arr = LUOGHI.concat(LUOGHI);
+    document.getElementById('lmqTrack').innerHTML = arr.map(function(l){ return '<span class="lmq-item mono">'+esc(l)+'</span>'; }).join('');
+  }
+
+  function renderHow(){
+    document.getElementById('howList').innerHTML = HOW.map(function(h,i){
+      var open = state._howOpen===i;
+      return '<div class="how-row" data-how="'+i+'">'+
+        '<div class="how-n mono" style="color:'+h.color+';">0'+(i+1)+'</div>'+
+        '<div><div class="how-t">'+esc(h.t)+'</div>'+(open?'<div class="how-d mono">'+esc(h.d)+'</div>':'')+'</div>'+
+        '<div class="how-sign mono">'+(open?'−':'+')+'</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  function findEvent(id){ for (var i=0;i<EVENTI.length;i++){ if (EVENTI[i].id===id) return EVENTI[i]; } return null; }
+
+  function openDetail(id){
+    var e = findEvent(id);
+    if (!e) return;
+    var root = document.getElementById('overlayRoot');
+    var fields = [
+      { k:"Data", v: e.d[2] + " " + MESI[e.d[1]] + " " + e.d[0] },
+      { k:"Ora", v: e.ora },
+      { k:"Luogo", v: e.luogo },
+      { k: e.cat==="Casting" ? "Organizzatore" : "Insegnante", v: e.chi },
+      { k:"Prezzo", v: e.prezzo },
+      { k:"Categoria", v: e.cat }
+    ];
+    var fieldsHtml = fields.map(function(f){ return '<div class="ov-field mono"><div class="k">'+esc(f.k)+'</div><div class="v">'+esc(f.v)+'</div></div>'; }).join('');
+    var srcBtn = e.fonteUrl ? ('<a href="'+e.fonteUrl+'" target="_blank" rel="noopener" class="ov-src-link mono" style="background:'+CAT[e.cat]+'; color:'+(e.cat==="Eventi"?"#0A0A0A":"#fff")+';">Vai alla fonte ↗</a>') : '';
+    root.innerHTML = '<div class="overlay" style="background:#0A0A0A; color:#F5F5F0;">'+
+      '<div class="ov-top"><span class="logo" style="font-size:18px;">MMH</span><button class="ov-close mono" id="closeOverlay">Chiudi ✕</button></div>'+
+      '<div class="ov-title"><div class="cg mono" style="color:'+CAT[e.cat]+';">'+esc(e.cat)+'</div><h2>'+esc(e.nome)+'</h2></div>'+
+      '<div class="ov-fields">'+fieldsHtml+'</div>'+
+      '<div class="ov-cta">'+srcBtn+'<span class="ov-src-text mono">Fonte: '+esc(e.fonte)+'</span></div>'+
+      (e.note ? ('<div class="ov-note mono">'+esc(e.note)+'</div>') : '')+
+    '</div>';
+    document.getElementById('closeOverlay').addEventListener('click', function(){ root.innerHTML=''; });
+  }
+
+  function renderAll(){
+    renderStats(); renderCatCards(); renderFilters(); renderCalendar(); renderFeature(); renderHow();
+  }
+
+  document.addEventListener('click', function(ev){
+    var t = ev.target.closest('[data-setfilter]');
+    if (t){ ev.preventDefault(); state.filter = t.getAttribute('data-setfilter'); renderFilters(); renderCalendar(); document.getElementById('calendario').scrollIntoView({behavior:'smooth', block:'start'}); return; }
+    var oe = ev.target.closest('[data-openevent]');
+    if (oe){ ev.preventDefault(); openDetail(oe.getAttribute('data-openevent')); return; }
+    var ft = ev.target.closest('[data-feat]');
+    if (ft){ state.feat = parseInt(ft.getAttribute('data-feat'),10); renderFeature(); return; }
+    var hw = ev.target.closest('[data-how]');
+    if (hw){ var idx = parseInt(hw.getAttribute('data-how'),10); state._howOpen = state._howOpen===idx ? -1 : idx; renderHow(); return; }
+  });
+
+  document.getElementById('prevMonth').addEventListener('click', function(){
+    if (state.month===0){ state.month=11; state.year--; } else { state.month--; }
+    renderStats(); renderCatCards(); renderFilters(); renderCalendar();
+  });
+  document.getElementById('nextMonth').addEventListener('click', function(){
+    if (state.month===11){ state.month=0; state.year++; } else { state.month++; }
+    renderStats(); renderCatCards(); renderFilters(); renderCalendar();
+  });
+
+  var featTimer = setInterval(function(){
+    var up = upcoming();
+    if (up.length>1){ state.feat = (state.feat+1) % Math.min(3, up.length); renderFeature(); }
+  }, 4500);
+
+  function updateClock(){
+    var s = new Date().toLocaleTimeString('it-IT', { timeZone:'Europe/Rome', hour12:false });
+    document.getElementById('clock').textContent = s;
+    document.getElementById('clock2').textContent = s;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  document.getElementById('copyEmail').addEventListener('click', function(){
+    var addr = 'milanomovementhub@gmail.com';
+    var stateEl = document.getElementById('copyState');
+    function done(){ stateEl.textContent = '— copiata ✓'; setTimeout(function(){ stateEl.textContent='— copia'; }, 2200); }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(addr).then(done).catch(function(){
+        stateEl.textContent = '— selezionala e copiala';
+        setTimeout(function(){ stateEl.textContent='— copia'; }, 2600);
+      });
+    } else {
+      stateEl.textContent = '— selezionala e copiala';
+      setTimeout(function(){ stateEl.textContent='— copia'; }, 2600);
+    }
+  });
+
+  // Loading screen
+  renderMarquee(); renderLuoghi(); renderAll();
+  var pct = 0;
+  var loaderEl = document.getElementById('loader');
+  var pctEl = document.getElementById('loaderPct');
+  var fillEl = document.getElementById('loaderFill');
+  var labelEl = document.getElementById('loaderLabel');
+  var appEl = document.getElementById('app');
+  var pTimer = setInterval(function(){
+    pct = Math.min(100, pct + Math.random()*10 + 5);
+    var p = Math.floor(pct);
+    pctEl.textContent = String(p).padStart(3,'0');
+    fillEl.style.width = p + '%';
+    var lbl = p<40 ? 'Open Class' : p<75 ? 'Eventi' : 'Casting';
+    labelEl.textContent = lbl; labelEl.style.color = CAT[lbl]; fillEl.style.background = CAT[lbl];
+    if (p>=100){
+      clearInterval(pTimer);
+      setTimeout(function(){ loaderEl.style.transform = 'translateY(-100%)'; appEl.style.opacity='1'; appEl.style.transition='opacity .5s'; }, 220);
+      setTimeout(function(){ loaderEl.style.display='none'; }, 1050);
+    }
+  }, 85);
+})();
 </script>
 </body>
 </html>
