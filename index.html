@@ -174,6 +174,11 @@
   .ov-src-link{font-size:12px; letter-spacing:.1em; text-transform:uppercase; padding:13px 20px;}
   .ov-src-text{font-size:11px; opacity:.55;}
   .ov-note{width:100%; max-width:70ch; margin:0 auto 0 0; padding:0 24px 36px; font-size:12.5px; line-height:1.8; opacity:.78;}
+  .ov-lineup-h{width:100%; max-width:1280px; margin:0 auto; padding:28px 24px 0; font-size:10px; letter-spacing:.14em; text-transform:uppercase; opacity:.55;}
+  .ov-lineup{width:100%; max-width:1280px; margin:0 auto; padding:10px 24px 8px;}
+  .ov-lineup-row{display:flex; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid var(--line); font-size:16px;}
+  .ov-lineup-row .nm{font-weight:600; letter-spacing:-.01em;}
+  .ov-lineup-row .tm{color:var(--dim); font-size:13px; white-space:nowrap;}
 
   .loader{position:fixed; inset:0; z-index:90; background:var(--bg); color:var(--text); display:flex; flex-direction:column; justify-content:space-between; padding:24px; transition:transform .8s cubic-bezier(.76,0,.24,1);}
   .loader-top{display:flex; justify-content:space-between; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dimmer);}
@@ -333,7 +338,7 @@
   // Non e' un collegamento live: per ora viene aggiornato a mano da chi gestisce MMH.
   var EVENTI = [
     { id:"alessia", nome:"Alessia Erba", cat:"Open Class", d:[2026,9,2], ora:"21:15–22:45", luogo:"Area Dance Milano", chi:"Alessia Erba", prezzo:"Da verificare", fonte:"@altura_dancecrew", fonteUrl:"https://instagram.com/altura_dancecrew", note:"Open class settimanale di @altura_dancecrew — questa settimana con Alessia Erba. Stile e livello da verificare." },
-    { id:"fierce1", nome:"Miriana Laruccia · Kekko Talotti", cat:"Open Class", d:[2026,9,3], ora:"11:30–16:30", luogo:"Centro d'Arte Sauvage / AIM Academy", chi:"Miriana Laruccia, poi Kekko Talotti", prezzo:"Da verificare", fonte:"@fierce_on_heels", fonteUrl:"https://instagram.com/fierce_on_heels", note:"11:30–13:30 Miriana Laruccia · 14:30–16:30 Kekko Talotti." },
+    { id:"fierce1", nome:"Fierce on Heels", cat:"Eventi", d:[2026,9,3], ora:"11:30–16:30", luogo:"Centro d'Arte Sauvage / AIM Academy", chi:"Miriana Laruccia, Kekko Talotti", insegnanti:[{nome:"Miriana Laruccia", orario:"11:30–13:30"},{nome:"Kekko Talotti", orario:"14:30–16:30"}], prezzo:"140 € (pass weekend completo) — prezzo singola lezione non indicato", fonte:"@fierce_on_heels", fonteUrl:"https://instagram.com/fierce_on_heels", note:"Sabato del weekend Fierce on Heels. Domenica: Jessica Sala e Savane Boisliveau (voce separata)." },
     { id:"daniele", nome:"Daniele Sibilli — Contemporaneo", cat:"Open Class", d:[2026,9,3], ora:"11:45–13:15", luogo:"Accademia Arte Danza APD", chi:"Daniele Sibilli", prezzo:"Da verificare", fonte:"@danielesibilli", fonteUrl:"https://instagram.com/danielesibilli", note:"" },
     { id:"mary", nome:"Mary Molfese — Heels", cat:"Open Class", d:[2026,9,3], ora:"12:00–15:00", luogo:"Imbonati 11 Art Hub", chi:"Mary Molfese", prezzo:"Da verificare", fonte:"DM insegnante", fonteUrl:null, note:"Heels. Livello e prezzo non indicati, da verificare." },
     { id:"banana1", nome:"Banana", cat:"Open Class", d:[2026,9,3], ora:"14:00–15:30", luogo:"Moto Armonico, Cornate d'Adda", chi:"Banana", prezzo:"Da verificare", fonte:"MMH", fonteUrl:null, note:"Fuori Milano (Cornate d'Adda). Stile e prezzo non indicati — info e prenotazioni in DM." },
@@ -341,7 +346,7 @@
     { id:"tommi", nome:"Tommi Gavi", cat:"Open Class", d:[2026,9,3], ora:"15:00–17:30", luogo:"Studio Underground Srl", chi:"Tommi Gavi", prezzo:"Da verificare", fonte:"@tommigavi", fonteUrl:"https://instagram.com/tommigavi", note:"Stile non indicato, da verificare." },
     { id:"jesus", nome:"Jesus Guia — Hip hop", cat:"Open Class", d:[2026,9,3], ora:"16:45–18:15", luogo:"Accademia Arte Danza APD", chi:"Jesus Guia", prezzo:"Da verificare", fonte:"@jesus_guia10", fonteUrl:"https://instagram.com/jesus_guia10", note:"" },
     { id:"kum", nome:"Kum — Hip hop", cat:"Open Class", d:[2026,9,4], ora:"10:00–11:30", luogo:"Accademia Arte Danza APD", chi:"Kum", prezzo:"Da verificare", fonte:"@kum.ooo", fonteUrl:"https://instagram.com/kum.ooo", note:"" },
-    { id:"fierce2", nome:"Jessica Sala · Savane Boisliveau", cat:"Open Class", d:[2026,9,4], ora:"10:45–16:45", luogo:"Centro d'Arte Sauvage / AIM Academy", chi:"Jessica Sala, poi Savane Boisliveau", prezzo:"Da verificare", fonte:"@fierce_on_heels", fonteUrl:"https://instagram.com/fierce_on_heels", note:"10:45–12:45 Jessica Sala · pausa · 14:15–16:45 Savane Boisliveau." },
+    { id:"fierce2", nome:"Fierce on Heels", cat:"Eventi", d:[2026,9,4], ora:"10:45–16:45", luogo:"Centro d'Arte Sauvage / AIM Academy", chi:"Jessica Sala, Savane Boisliveau", insegnanti:[{nome:"Jessica Sala", orario:"10:45–12:45"},{nome:"pausa", orario:"12:45–14:15"},{nome:"Savane Boisliveau", orario:"14:15–16:45"}], prezzo:"140 € (pass weekend completo) — prezzo singola lezione non indicato", fonte:"@fierce_on_heels", fonteUrl:"https://instagram.com/fierce_on_heels", note:"Domenica del weekend Fierce on Heels. Sabato: Miriana Laruccia e Kekko Talotti (voce separata)." },
     { id:"vittoria", nome:"Vittoria Markov — Modern", cat:"Open Class", d:[2026,9,4], ora:"11:45–13:15", luogo:"Accademia Arte Danza APD", chi:"Vittoria Markov", prezzo:"Da verificare", fonte:"@vittoriamarkov", fonteUrl:"https://instagram.com/vittoriamarkov", note:"" },
     { id:"groovay", nome:"Groovay — Banana", cat:"Eventi", d:[2026,9,4], ora:"15:00–18:30", luogo:"MS Dance Factory", chi:"Agnese e Yusef, poi Banana", prezzo:"Da verificare", fonte:"@_groovay_", fonteUrl:"https://instagram.com/_groovay_", note:"15:00–16:30 Agnese e Yusef · 16:30–18:00 Banana · 18:00–18:30 Q&A." },
     { id:"mauro", nome:"Mauro Savino", cat:"Open Class", d:[2026,9,4], ora:"15:00–16:30", luogo:"Accademia Arte Danza APD", chi:"Mauro Savino", prezzo:"Da verificare", fonte:"@mauro.savino", fonteUrl:"https://instagram.com/mauro.savino", note:"Stile non indicato, da verificare." },
@@ -538,20 +543,27 @@
     var e = findEvent(id);
     if (!e) return;
     var root = document.getElementById('overlayRoot');
+    var hasLineup = Array.isArray(e.insegnanti) && e.insegnanti.length>0;
     var fields = [
       { k:"Data", v: e.d[2] + " " + MESI[e.d[1]] + " " + e.d[0] },
       { k:"Ora", v: e.ora },
-      { k:"Luogo", v: e.luogo },
-      { k: e.cat==="Casting" ? "Organizzatore" : "Insegnante", v: e.chi },
-      { k:"Prezzo", v: e.prezzo },
-      { k:"Categoria", v: e.cat }
+      { k:"Luogo", v: e.luogo }
     ];
+    if (!hasLineup) fields.push({ k: e.cat==="Casting" ? "Organizzatore" : "Insegnante", v: e.chi });
+    fields.push({ k:"Prezzo", v: e.prezzo }, { k:"Categoria", v: e.cat });
     var fieldsHtml = fields.map(function(f){ return '<div class="ov-field mono"><div class="k">'+esc(f.k)+'</div><div class="v">'+esc(f.v)+'</div></div>'; }).join('');
+    var lineupHtml = hasLineup ? (
+      '<div class="ov-lineup-h mono">Chi insegna</div>'+
+      '<div class="ov-lineup">'+e.insegnanti.map(function(p){
+        return '<div class="ov-lineup-row mono"><span class="nm">'+esc(p.nome)+'</span><span class="tm">'+esc(p.orario)+'</span></div>';
+      }).join('')+'</div>'
+    ) : '';
     var srcBtn = e.fonteUrl ? ('<a href="'+e.fonteUrl+'" target="_blank" rel="noopener" class="ov-src-link mono" style="background:'+CAT[e.cat]+'; color:'+(e.cat==="Eventi"?"#0A0A0A":"#fff")+';">Vai alla fonte ↗</a>') : '';
     root.innerHTML = '<div class="overlay" style="background:#0A0A0A; color:#F5F5F0;">'+
       '<div class="ov-top"><span class="logo" style="font-size:18px;">MMH</span><button class="ov-close mono" id="closeOverlay">Chiudi ✕</button></div>'+
       '<div class="ov-title"><div class="cg mono" style="color:'+CAT[e.cat]+';">'+esc(e.cat)+'</div><h2>'+esc(e.nome)+'</h2></div>'+
       '<div class="ov-fields">'+fieldsHtml+'</div>'+
+      lineupHtml+
       '<div class="ov-cta">'+srcBtn+'<span class="ov-src-text mono">Fonte: '+esc(e.fonte)+'</span></div>'+
       (e.note ? ('<div class="ov-note mono">'+esc(e.note)+'</div>') : '')+
     '</div>';
